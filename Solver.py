@@ -9,11 +9,12 @@ class Solver:
         dataset = list(lines)
         proccessed_dataset = []
         for i in range(len(dataset)):
-            dataset_has_completed_data = dataset[i][7] != ''
+            dataset_has_completed_data = dataset[i][9] != ''
             if dataset_has_completed_data:
                 proccessed_dataset.append(Flight(dataset[i][0], dataset[i][1],
                                     dataset[i][2], dataset[i][3],
-                                    dataset[i][6], dataset[i][7]))
+                                    dataset[i][4], dataset[i][8],
+                                    dataset[i][9]))
         return proccessed_dataset
 
     def separate_by_class(dataset):
@@ -49,3 +50,42 @@ class Solver:
         for classValue, instances in separated_dataset.items():
             summaries[classValue] = Solver.summarize_separated_dataset(instances)
         return summaries
+
+    def calculate_probability(x, mean, stdev):
+        print("stdev {0}".format(stdev))
+        exponent = math.exp(-(math.pow(x - mean, 2) / (2 * math.pow(stdev, 2))))
+        return (1 / (math.sqrt(2 * math.pi) * stdev)) * exponent
+
+    def calculate_class_probabilities(summaries, input_vector):
+        probabilities = {}
+        for classValue, classSummaries in summaries.items():
+            probabilities[classValue] = 1
+            print("class_summaries: {0}".format(classSummaries))
+            for i in range(len(classSummaries)):
+                mean, stdev = classSummaries[i]
+                x = input_vector[i]
+                probabilities[classValue] *= Solver.calculate_probability(x, mean, stdev)
+        return probabilities
+
+    def predict(summaries, input_vector):
+        probabilities = Solver.calculate_class_probabilities(summaries, input_vector)
+        bestLabel, bestProb = None, -1
+        for classValue, probability in probabilities.items():
+            if bestLabel is None or probability > bestProb:
+                bestProb = probability
+                bestLabel = classValue
+        return bestLabel
+
+    def get_predictions(summaries, test_set):
+        predictions = []
+        for i in range(len(test_set)):
+            result = Solver.predict(summaries, test_set[i].get_property_array())
+            predictions.append(result)
+        return predictions
+
+    def get_accuracy(testSet, predictions):
+        correct = 0
+        for x in range(len(testSet)):
+            if testSet[x].get_property_array()[-1] == predictions[x]:
+                correct += 1
+        return (correct / float(len(testSet))) * 100.0
