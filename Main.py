@@ -11,16 +11,19 @@ class Main:
         training_dataset = Solver.load_csv(training_filename)
         testing_dataset = Solver.load_csv(testing_filename)
         #Model preparation
-        separated_training_datase = Solver.separate_by_class(training_dataset)
-        summaries = Solver.summarize_by_class(separated_training_datase)
+        separated_training_dataset = Solver.separate_by_class(training_dataset)
+        summaries = Solver.summarize_by_class(separated_training_dataset)
+        prior_probability = len(separated_training_dataset[0]) / (len(training_dataset))
         print(summaries)
         #Model testing
-        predictions = Solver.get_predictions(summaries, testing_dataset)
+        predictions = Solver.get_predictions(summaries, testing_dataset, prior_probability)
         accuracy = Solver.get_accuracy(testing_dataset, predictions)
+        Solver.show_roc_curve(testing_dataset, predictions)
         print('Accuracy: {0}%'.format(accuracy))
+        print(prior_probability)
 
     def data_exploration(self):
-        filename = 'Datasets/NewYork/training.csv'
+        filename = 'Datasets/NewYork/testing.csv'
         dataset = Solver.load_csv(filename)
         separated_dataset = Solver.separate_by_class(dataset)
         summary = Solver.summarize(dataset)
