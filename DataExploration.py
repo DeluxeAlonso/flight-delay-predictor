@@ -9,7 +9,7 @@ class DataExploration:
         x = [0] * n_months
         y = [0] * n_months
         for i in range(len(dataset)):
-            property_array = dataset[i].get_property_array()
+            property_array = dataset[i].get_categorical_property_array()
             index = int(property_array[0]) - 1
             y[index] += 1
             if property_array[-1] == 1.0:
