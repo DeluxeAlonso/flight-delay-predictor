@@ -20,9 +20,8 @@ class Main:
         #Model testing
         predictions = Solver.get_predictions(summaries, testing_dataset, prior_probability)
         accuracy = Solver.get_accuracy(testing_dataset, predictions)
-        Solver.show_roc_curve(testing_dataset, predictions)
+        Solver.show_confussion_matrix(testing_dataset, predictions)
         print('Accuracy: {0}%'.format(accuracy))
-        print(prior_probability)
 
     def data_exploration(self):
         filename = 'Datasets/NewYork/testing.csv'

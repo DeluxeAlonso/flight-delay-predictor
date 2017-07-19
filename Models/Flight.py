@@ -1,16 +1,22 @@
 class Flight:
-    def __init__(self, quarter, month, day_of_month, day_of_week, date, airline_id, flight_number, origin_airport_id, origin_ariport_name, departure_time, real_departure_time):
+    def __init__(self, quarter, month, day_of_month, day_of_week, airline_id, tail_number,flight_number,
+                 origin_airport_id, origin_airport_name, destination_airport_id, destination_airport_name,
+                 departure_time, real_departure_time, elapsed_time, distance):
         self.quarter = quarter
-        self.month = month #Categorical
-        self.day_of_month = day_of_month #Categorical
-        self.day_of_week = day_of_week #Categorical
-        self.date = date
+        self.month = month
+        self.day_of_month = day_of_month
+        self.day_of_week = day_of_week
         self.airline_id = airline_id
+        self.tail_number = tail_number
         self.flight_number = flight_number
         self.origin_airport_id = origin_airport_id
-        self.origin_airport_name = origin_ariport_name #Categorical
-        self.departure_time = departure_time #Numerical
+        self.origin_airport_name = origin_airport_name
+        self.destination_airport_id = destination_airport_id
+        self.destination_airport_name = destination_airport_name
+        self.departure_time = departure_time
         self.real_departure_time = real_departure_time
+        self.elapsed_time = elapsed_time
+        self.distance = distance
         self.day_of_month_quarter = self.get_day_of_month_quarter()
         self.departure_time_quarter = self.get_departure_time_quarter()
         self.delayed = self.is_delayed()

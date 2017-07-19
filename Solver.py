@@ -12,14 +12,16 @@ class Solver:
         dataset = list(lines)
         proccessed_dataset = []
         for i in range(len(dataset)):
-            dataset_has_completed_data = dataset[i][10] != ''
+            dataset_has_completed_data = dataset[i][12] != ''
             if dataset_has_completed_data:
                 proccessed_dataset.append(Flight(dataset[i][0], dataset[i][1],
                                     dataset[i][2], dataset[i][3],
                                     dataset[i][4], dataset[i][5],
                                     dataset[i][6], dataset[i][7],
                                     dataset[i][8], dataset[i][9],
-                                    dataset[i][10]))
+                                    dataset[i][10], dataset[i][11],
+                                    dataset[i][12], dataset[i][16],
+                                    dataset[i][17]))
         return proccessed_dataset
 
     def separate_by_class(dataset, type):
@@ -129,7 +131,7 @@ class Solver:
                 correct += 1
         return (correct / float(len(testSet))) * 100.0
 
-    def show_roc_curve(test_set, predictions):
+    def get_classifier_outcomes(test_set, predictions):
         tp, fp, tn, fn = 0, 0, 0, 0
         for x in range(len(test_set)):
             if test_set[x].get_numerical_property_array()[-1] == predictions[x] == 1:
@@ -143,4 +145,20 @@ class Solver:
         for x in range(len(test_set)):
             if predictions[x] == 0 and test_set[x].get_numerical_property_array()[-1] != predictions[x]:
                 fn += 1
+        return tp, fp, tn, fn
+
+    def show_roc_curve(test_set, predictions):
+        tp, fp, tn, fn = Solver.get_classifier_outcomes(test_set, predictions)
         print("TP: {0}, FP: {1}, TN: {2}, FN: {3}".format(tp, fp, tn, fn))
+
+    def show_confussion_matrix(test_set, predictions):
+        tp, fp, tn, fn = Solver.get_classifier_outcomes(test_set, predictions)
+        print("TP: {0}, FP: {1}, TN: {2}, FN: {3}".format(tp, fp, tn, fn))
+        sensitivity = tp / (tp + fn)
+        specificity = tn / (tn + fp)
+        precision = tp / (tp + fp)
+        error_rate = (fp + fn) / (fp + fn + tp + tn)
+        print("Sensitivity or Recall: {0}%".format(sensitivity * 100.00))
+        print("Specificity: {0}%".format(specificity * 100.00))
+        print("Precision: {0}%".format(precision * 100.00))
+        print("Error rate: {0}%".format(error_rate * 100.00))
