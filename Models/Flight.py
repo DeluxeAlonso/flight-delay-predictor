@@ -18,28 +18,26 @@ class Flight:
         self.elapsed_time = elapsed_time
         self.distance = distance
         self.day_of_month_quarter = self.get_day_of_month_quarter()
-        self.departure_time_quarter = self.get_departure_time_quarter()
         self.delayed = self.is_delayed()
 
     def get_numerical_property_array(self):
-        return [float(self.departure_time), float(self.delayed)]
+        return [ float(self.distance), float(self.elapsed_time), float(self.delayed)]
 
     def get_categorical_property_array(self):
         return [str(self.month), str(self.day_of_month),
                 str(self.day_of_week), str(self.origin_airport_name),
-                str(self.airline_id),
+                str(self.airline_id), str(self.destination_airport_name),
+                str(self.get_departure_time_hour()),
                 float(self.delayed)]
 
-    def get_departure_time_quarter(self):
-        float_departure_time = float(self.departure_time)
-        if 0.00 <= float_departure_time < 600.00:
-            return 1
-        elif 600.00 <= float_departure_time < 1200.00:
-            return 2
-        elif 1200.00 <= float_departure_time < 1800.00:
-            return 3
+    def get_random_forest_property_array(self):
+        return [float(self.departure_time), float(self.distance), float(self.elapsed_time), float(self.delayed)]
+
+    def get_departure_time_hour(self):
+        if len(self.departure_time) == 3:
+            return self.departure_time[0]
         else:
-            return 4
+            return self.departure_time[0] + self.departure_time[1]
 
     def get_day_of_month_quarter(self):
         float_day_of_month = float(self.day_of_month)
