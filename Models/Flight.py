@@ -17,7 +17,6 @@ class Flight:
         self.real_departure_time = real_departure_time
         self.elapsed_time = elapsed_time
         self.distance = distance
-        self.day_of_month_quarter = self.get_day_of_month_quarter()
         self.delayed = self.is_delayed()
 
     def get_numerical_property_array(self):
@@ -27,11 +26,13 @@ class Flight:
         return [str(self.month), str(self.day_of_month),
                 str(self.day_of_week), str(self.origin_airport_name),
                 str(self.airline_id), str(self.destination_airport_name),
-                str(self.get_departure_time_hour()),
+                str(self.get_departure_time_hour()), str(self.tail_number),
                 float(self.delayed)]
 
     def get_random_forest_property_array(self):
-        return [float(self.departure_time), float(self.distance), float(self.elapsed_time), float(self.delayed)]
+        return [str(self.day_of_month), str(self.month), str(self.day_of_week), str(self.origin_airport_name),
+                str(self.destination_airport_name), str(self.flight_number), str(self.tail_number),
+                float(self.departure_time), float(self.delayed)]
 
     def get_departure_time_hour(self):
         if len(self.departure_time) == 3:
@@ -39,18 +40,19 @@ class Flight:
         else:
             return self.departure_time[0] + self.departure_time[1]
 
-    def get_day_of_month_quarter(self):
-        float_day_of_month = float(self.day_of_month)
-        if 1.00 <= float_day_of_month < 8.00:
-            return 1
-        elif 8.00 <= float_day_of_month < 15.00:
-            return 2
-        elif 15.00 <= float_day_of_month < 22.00:
-            return 3
-        elif 22.00 <= float_day_of_month < 29.00:
-            return 4
+    def get_time_hour_minutes(self, time):
+        if len(time) == 3:
+            hour = time[0]
+            minutes = time[1] + time[2]
+            return hour, minutes
         else:
-            return 5
+            hour = time[0] + time[1]
+            minutes = time[2] + time[3]
+            return hour, minutes
 
     def is_delayed(self):
-        return float(self.real_departure_time) - float(self.departure_time) > 15
+        departure_h, departure_m = self.get_time_hour_minutes(self.departure_time)
+        real_departure_h, real_departure_m = self.get_time_hour_minutes(self.real_departure_time)
+        departure_time = float(departure_h) * 3600.00 + float(departure_m) * 60.00
+        real_departure_time = float(real_departure_h) * 3600.00 + float(real_departure_m) * 60.00
+        return (real_departure_time - departure_time)/60.0 > 15.00

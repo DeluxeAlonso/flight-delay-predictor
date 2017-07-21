@@ -31,14 +31,14 @@ class Main:
         testing_dataset = RandomForest.load_csv(testing_filename)
         training_df = RandomForest.get_property_data_frame(training_dataset)
         testing_df = RandomForest.get_property_data_frame(testing_dataset)
-        random_forest_property_length = len(training_dataset[0].get_random_forest_property_array()) - 1
-        predictions, probabilities = RandomForest.get_predictions(training_df, testing_df,
+        random_forest_property_length = len(training_dataset[0].get_random_forest_property_array())
+        predictions, probabilities = RandomForest.get_h2o_predictions(training_df, testing_df,
                                                    random_forest_property_length)
         eval.show_evaluation_measure_values(testing_dataset, predictions)
         eval.show_roc_curve(testing_dataset, probabilities)
 
     def data_exploration(self):
-        filename = 'Datasets/NewYork/testing.csv'
+        filename = 'Datasets/NewYork/training.csv'
         dataset = NaiveBayes.load_csv(filename)
         separated_dataset = NaiveBayes.separate_by_class(dataset, 0)
         print('Separated instances: {0}'.format(separated_dataset))
@@ -47,4 +47,4 @@ class Main:
         print('Number of delayes flights {0}'.format(len(separated_dataset[1])))
         expl.show_delays_per_month(dataset)
 
-Main().random_forest_predictor()
+Main().data_exploration()
