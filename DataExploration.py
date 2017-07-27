@@ -1,11 +1,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 n_months = 12
 n_days_per_week = 7
 bar_width = 0.35
 
 class DataExploration:
+    def show_basic_information(filename):
+        dataset = pd.read_csv(filename)
+        print(dataset.head())
+        print(dataset.shape)
+        for col in dataset:
+            print("%d NULL values are found in column %s" % (dataset[col].isnull().sum().sum(), col))
+        print(dataset.columns.values)
+
     def show_delays_per_month(dataset):
         x = [0] * n_months
         y = [0] * n_months
@@ -54,4 +63,12 @@ class DataExploration:
         ax.set_xticks(ind + bar_width / 2)
         ax.set_xticklabels(('lun', 'mar', 'mier', 'jue', 'vie', 'sab', 'dom'))
         ax.legend((delayed_flights_bar[0], total_flights_bar[0]), ('Viajes retrasados', 'Viajes totales'))
+        plt.show()
+
+    def pandas_data_visualization(dataset):
+        attributes_array = []
+        for i in range(len(dataset)):
+            attributes_array.append(dataset[i].get_random_forest_property_array())
+        df = pd.DataFrame(attributes_array)
+        df.hist()
         plt.show()

@@ -17,6 +17,7 @@ class Flight:
         self.real_departure_time = real_departure_time
         self.elapsed_time = elapsed_time
         self.distance = distance
+        self.cancelled = self.is_cancelled()
         self.delayed = self.is_delayed()
 
     def get_numerical_property_array(self):
@@ -30,9 +31,15 @@ class Flight:
                 float(self.delayed)]
 
     def get_random_forest_property_array(self):
-        return [str(self.day_of_month), str(self.month), str(self.day_of_week), str(self.origin_airport_name),
-                str(self.destination_airport_name), str(self.flight_number), str(self.tail_number),
-                float(self.departure_time), float(self.delayed)]
+        return [str(self.month), str(self.origin_airport_name), str(self.destination_airport_name),
+                str(self.day_of_week),str(self.get_departure_time_hour()), float(self.distance),
+                float(self.elapsed_time), float(self.delayed)]
+
+    def get_all_property_array(self):
+        return [self.quarter, self.month, self.day_of_month, self.day_of_week,
+                self.airline_id, self.tail_number, self.flight_number, self.origin_airport_id,
+                self.origin_airport_name, self.destination_airport_id, self.destination_airport_name, self.departure_time,
+                self.real_departure_time, self.elapsed_time, self.distance]
 
     def get_departure_time_hour(self):
         if len(self.departure_time) == 3:
@@ -56,3 +63,23 @@ class Flight:
         departure_time = float(departure_h) * 3600.00 + float(departure_m) * 60.00
         real_departure_time = float(real_departure_h) * 3600.00 + float(real_departure_m) * 60.00
         return (real_departure_time - departure_time)/60.0 > 15.00
+
+    def is_cancelled(self):
+        if self.real_departure_time == '':
+            if len(self.departure_time) < 3:
+                self.departure_time = self.departure_time + '00'
+            departure_h, departure_m = self.get_time_hour_minutes(self.departure_time)
+            if 60.0 - float(departure_m) > 15.0:
+                real_departure_m = float(departure_m) + 15.0
+                real_departure_h = float(departure_h)
+            else:
+                real_departure_h = float(departure_h) + 1.0
+                real_departure_m = 15.0 - (60.0 - float(departure_m))
+            if real_departure_m < 10.0:
+                real_departure_m = "0" + str(int(real_departure_m))
+            else:
+                real_departure_m = str(int(real_departure_m))
+            self.real_departure_time = str(int(real_departure_h)) + real_departure_m
+            return True
+        else:
+            return False
