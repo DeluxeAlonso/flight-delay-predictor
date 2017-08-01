@@ -1,5 +1,6 @@
 import csv
 import math
+import pandas as pd
 from Models.Flight import Flight
 
 class Utils:
@@ -11,19 +12,19 @@ class Utils:
         for i in range(len(dataset)):
             if include_cancelled:
                 dataset_has_completed_data = (len(dataset[i][11]) >= 3 and dataset[i][16] != '') and \
-                                             (dataset[i][12] == '' or len(dataset[i][12]) >=3 and dataset[i][16] != '')
+                                             (dataset[i][12] == '' or len(dataset[i][12]) >= 3 and dataset[i][16] != '')
             else:
-                dataset_has_completed_data = len(dataset[i][11]) >=3 and \
-                                             len(dataset[i][12]) >=3 and dataset[i][16] != ''
+                dataset_has_completed_data = len(dataset[i][11]) >= 3 and \
+                                             len(dataset[i][12]) >= 3 and dataset[i][16] != ''
             if dataset_has_completed_data:
                 proccessed_dataset.append(Flight(dataset[i][0], dataset[i][1],
-                                    dataset[i][2], dataset[i][3],
-                                    dataset[i][4], dataset[i][5],
-                                    dataset[i][6], dataset[i][7],
-                                    dataset[i][8], dataset[i][9],
-                                    dataset[i][10], dataset[i][11],
-                                    dataset[i][12], dataset[i][16],
-                                    dataset[i][17]))
+                                                 dataset[i][2], dataset[i][3],
+                                                 dataset[i][4], dataset[i][5],
+                                                 dataset[i][6], dataset[i][7],
+                                                 dataset[i][8], dataset[i][9],
+                                                 dataset[i][10], dataset[i][11],
+                                                 dataset[i][12], dataset[i][16],
+                                                 dataset[i][17]))
         return proccessed_dataset
 
     def load_processed_dataset(filename):

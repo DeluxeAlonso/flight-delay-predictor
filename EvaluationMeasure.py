@@ -28,12 +28,14 @@ class EvaluationMeasure:
         precision = tp / (tp + fp)
         error_rate = (fp + fn) / (fp + fn + tp + tn)
         accuracy = 1.0 - error_rate
+        f_score = (2 * precision * sensitivity) / (precision + sensitivity)
         print("TP: {0}, FP: {1}, TN: {2}, FN: {3}".format(tp, fp, tn, fn))
         print("Sensitivity or Recall: {0}%".format(sensitivity * 100.00))
         print("Specificity: {0}%".format(specificity * 100.00))
         print("Precision: {0}%".format(precision * 100.00))
         print("Error rate: {0}%".format(error_rate * 100.00))
         print("Accuracy: {0}%".format(accuracy * 100.00))
+        print("F1 Score: {0}%".format(f_score))
 
     def get_test_set_values(test_set):
         test_values = []

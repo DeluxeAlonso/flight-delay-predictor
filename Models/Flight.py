@@ -2,26 +2,27 @@ class Flight:
     def __init__(self, quarter, month, day_of_month, day_of_week, airline_id, tail_number,flight_number,
                  origin_airport_id, origin_airport_name, destination_airport_id, destination_airport_name,
                  departure_time, real_departure_time, elapsed_time, distance):
-        self.quarter = quarter
-        self.month = month
-        self.day_of_month = day_of_month
-        self.day_of_week = day_of_week
-        self.airline_id = airline_id
-        self.tail_number = tail_number
-        self.flight_number = flight_number
-        self.origin_airport_id = origin_airport_id
-        self.origin_airport_name = origin_airport_name
-        self.destination_airport_id = destination_airport_id
-        self.destination_airport_name = destination_airport_name
-        self.departure_time = departure_time
-        self.real_departure_time = real_departure_time
-        self.elapsed_time = elapsed_time
-        self.distance = distance
+        self.quarter = str(quarter)
+        self.month = str(month)
+        self.day_of_month = str(day_of_month)
+        self.day_of_week = str(day_of_week)
+        self.airline_id = str(airline_id)
+        self.tail_number = str(tail_number)
+        self.flight_number = str(flight_number)
+        self.origin_airport_id = str(origin_airport_id)
+        self.origin_airport_name = str(origin_airport_name)
+        self.destination_airport_id = str(destination_airport_id)
+        self.destination_airport_name = str(destination_airport_name)
+        self.departure_time = str(departure_time)
+        self.real_departure_time = str(real_departure_time)
+        self.elapsed_time = str(elapsed_time)
+        self.distance = str(distance)
         self.cancelled = self.is_cancelled()
-        self.delayed = self.is_delayed()
+        if not self.cancelled:
+            self.delayed = self.is_delayed()
 
     def get_numerical_property_array(self):
-        return [ float(self.distance), float(self.elapsed_time), float(self.delayed)]
+        return [ float(self.elapsed_time), float(self.delayed)]
 
     def get_categorical_property_array(self):
         return [str(self.month), str(self.day_of_month),
@@ -32,7 +33,7 @@ class Flight:
 
     def get_random_forest_property_array(self):
         return [str(self.month), str(self.origin_airport_name), str(self.destination_airport_name),
-                str(self.day_of_week),str(self.get_departure_time_hour()), float(self.distance),
+                str(self.day_of_week),str(self.get_departure_time_hour()), str(self.tail_number), str(self.day_of_month),
                 float(self.elapsed_time), float(self.delayed)]
 
     def get_all_property_array(self):
@@ -62,10 +63,10 @@ class Flight:
         real_departure_h, real_departure_m = self.get_time_hour_minutes(self.real_departure_time)
         departure_time = float(departure_h) * 3600.00 + float(departure_m) * 60.00
         real_departure_time = float(real_departure_h) * 3600.00 + float(real_departure_m) * 60.00
-        return (real_departure_time - departure_time)/60.0 > 15.00
+        return (real_departure_time - departure_time)/60.0 >= 15.00
 
     def is_cancelled(self):
-        if self.real_departure_time == '':
+        if self.real_departure_time == '' or self.real_departure_time == "nan" or self.real_departure_time == None:
             if len(self.departure_time) < 3:
                 self.departure_time = self.departure_time + '00'
             departure_h, departure_m = self.get_time_hour_minutes(self.departure_time)
@@ -80,6 +81,10 @@ class Flight:
             else:
                 real_departure_m = str(int(real_departure_m))
             self.real_departure_time = str(int(real_departure_h)) + real_departure_m
+            self.delayed = True
             return True
         else:
             return False
+
+    def set_elapsed_time(self, elapsed_time):
+        self.elapsed_time = elapsed_time

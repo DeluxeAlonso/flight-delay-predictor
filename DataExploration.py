@@ -65,6 +65,26 @@ class DataExploration:
         ax.legend((delayed_flights_bar[0], total_flights_bar[0]), ('Viajes retrasados', 'Viajes totales'))
         plt.show()
 
+    def show_flights_per_airport(dataset):
+        new_dataset = []
+        airports_limit = 45 #top limit of busiest Airports
+        x = {}
+        for i in range(len(dataset)):
+            origin_airport_name = dataset[i].origin_airport_name
+            if origin_airport_name not in x:
+                x[origin_airport_name] = 0
+            x[origin_airport_name] += 1
+        print("Total flights number: {0}".format(len(dataset)))
+        print("Total count of airports: {0}".format(len(x)))
+        busiest_origin_airports = sorted(x, key=x.__getitem__, reverse=True)
+        busiest_origin_airports = busiest_origin_airports[:airports_limit]
+        flight_qty = 0
+        print("bussiest_origin_airports: {0}".format(busiest_origin_airports))
+        for key in busiest_origin_airports:
+            flight_qty += x[key]
+        print("Total flights in bussiest airports: {0}".format(flight_qty))
+        print("% of flights in bussiest airports: {0}%".format( (flight_qty / len(dataset)) * 100.00 ))
+
     def pandas_data_visualization(dataset):
         attributes_array = []
         for i in range(len(dataset)):
