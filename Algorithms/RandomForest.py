@@ -14,8 +14,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.preprocessing import Normalizer
 
 seed = 7
-num_trees = 10
-max_features = 3
+num_trees = 25
+max_features = 8
 n_splits = 5
 
 class RandomForest:
@@ -86,11 +86,13 @@ class RandomForest:
         testing_array = testing_df.values
         x = training_array[:, 0:attribute_property_length]
         y = training_array[:, attribute_property_length - 1]
+
         x_test = testing_array[:, 0:attribute_property_length]
         ts_df = h2o.H2OFrame(x_test)
         tr_df = h2o.H2OFrame(x)
-        training_columns = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7','C8']
-        response_column = 'C9'
+
+        training_columns = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7','C8', 'C9', 'C10']
+        response_column = 'C11'
         model = H2ORandomForestEstimator(balance_classes=True, ntrees=num_trees, max_depth=20, nfolds=5)
         model.train(x=training_columns, y=response_column, training_frame=tr_df, validation_frame=ts_df)
         predictions = model.predict(ts_df)

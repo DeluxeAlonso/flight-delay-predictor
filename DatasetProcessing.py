@@ -3,18 +3,29 @@ import csv
 from Utils import Utils
 import numpy as np
 
-original_training_dataset_filename = 'Datasets/NewYork/training.csv'
+original_training_dataset_filename = 'Datasets/NewYork/Training/merged_training.csv'
 training_dataset_filename = 'Datasets/TrainingDataset.csv'
 
+original_testing_dataset_filename = 'Datasets/NewYork/Testing/merged_testing.csv'
+testing_dataset_filename = 'Datasets/TestingDataset.csv'
+
 class DatasetProcessing:
-    def process_datasets(self):
-        dataset = DatasetProcessing.cleanup()
+    def process_training_dataset(self):
+        dataset = DatasetProcessing.cleanup(original_training_dataset_filename)
         dataset = DatasetProcessing.select_busiest_origin_airports(dataset, qty=45)
-        DatasetProcessing.outliers_detection(dataset, adjust_outliers=True)
+        dataset = DatasetProcessing.outliers_detection(dataset, adjust_outliers=True)
+        #dataset = DatasetProcessing.holidays_feature_engineering(dataset)
+        dataset = DatasetProcessing.days_to_holiday_feature_engineering(dataset)
         DatasetProcessing.create_processed_dataset(dataset, training_dataset_filename)
 
-    def cleanup():
-        dataset = Utils.load_csv(original_training_dataset_filename, include_cancelled=True)
+    def process_testing_dataset(self):
+        dataset = DatasetProcessing.cleanup(original_testing_dataset_filename)
+        #dataset = DatasetProcessing.holidays_feature_engineering(dataset)
+        dataset = DatasetProcessing.days_to_holiday_feature_engineering(dataset)
+        DatasetProcessing.create_processed_dataset(dataset, testing_dataset_filename)
+
+    def cleanup(filename):
+        dataset = Utils.load_csv(filename, include_cancelled=True)
         return dataset
 
     def select_busiest_origin_airports(dataset, qty=70):
@@ -44,17 +55,34 @@ class DatasetProcessing:
         print(elapsed_time_mean)
         print(elapsed_time_stdev)
         if adjust_outliers:
-            elapsed_time_values = []
+            new_dataset = []
             for i in range(len(dataset)):
-                if float(dataset[i].elapsed_time) >= 500.00:
-                    dataset[i].set_elapsed_time(int(elapsed_time_mean))
-                elapsed_time_values.append(float(dataset[i].elapsed_time))
+                if float(dataset[i].elapsed_time) < 400.00:
+                    new_dataset.append(dataset[i])
+            return new_dataset
         elapsed_time_values = np.array(sorted(elapsed_time_values))
         print(elapsed_time_values)
         plt.figure()
         plt.boxplot([elapsed_time_values])
         plt.xticks([1], ['Tiempo estimado de vuelo'])
         plt.show()
+        return dataset
+
+    def holidays_feature_engineering(dataset):
+        new_dataset = []
+        for i in range(len(dataset)):
+            flight = dataset[i]
+            flight.set_holiday(type=1)
+            new_dataset.append(flight)
+        return new_dataset
+
+    def days_to_holiday_feature_engineering(dataset):
+        new_dataset = []
+        for i in range(len(dataset)):
+            flight = dataset[i]
+            flight.set_days_to_holiday()
+            new_dataset.append(flight)
+        return new_dataset
 
     def create_processed_dataset(dataset, filename):
         dataset_list = []
@@ -63,4 +91,4 @@ class DatasetProcessing:
         wr = csv.writer(open(filename, "w+"))
         wr.writerows(dataset_list)
 
-DatasetProcessing().process_datasets()
+DatasetProcessing().process_training_dataset()

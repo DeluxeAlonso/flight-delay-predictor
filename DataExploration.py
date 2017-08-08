@@ -65,6 +65,33 @@ class DataExploration:
         ax.legend((delayed_flights_bar[0], total_flights_bar[0]), ('Viajes retrasados', 'Viajes totales'))
         plt.show()
 
+    def show_delays_per_holiday(dataset, normed=False):
+        x = [0]
+        y = [0]
+        for i in range(len(dataset)):
+            flight = dataset[i]
+            property_array = flight.get_categorical_property_array()
+            if flight.holiday == '1':
+                y[0] += 1
+                if property_array[-1] == 1.0:
+                    x[0] += 1
+        if normed:
+            x[0] = x[0] / y[0]
+            y[0] = 1
+        print("total {0}".format(y[0]))
+        print("retrasados {0}".format(x[0]))
+        ind = np.arange(1)
+        fig, ax = plt.subplots()
+        delayed_flights_tuple, total_flights_tuple = DataExploration.generate_flight_bar_tuples(x, y, 1)
+        delayed_flights_bar = ax.bar(ind, delayed_flights_tuple, bar_width, color='r')
+        total_flights_bar = ax.bar(ind + bar_width, total_flights_tuple, bar_width, color='y')
+        ax.set_ylabel('Cantidad de viajes')
+        ax.set_title('Viajes retrasados')
+        ax.set_xticks(ind + bar_width / 2)
+        ax.set_xticklabels(('Holiday', 'Holiday'))
+        ax.legend((delayed_flights_bar[0], total_flights_bar[0]), ('Viajes retrasados', 'Viajes totales'))
+        plt.show()
+
     def show_flights_per_airport(dataset):
         new_dataset = []
         airports_limit = 45 #top limit of busiest Airports

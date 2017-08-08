@@ -63,7 +63,6 @@ class EvaluationMeasure:
         y_actual = pd.Series(test_values, name ='Actual')
         y_pred = pd.Series(predictions, name = 'Predicted')
         df_confusion = pd.crosstab(y_actual, y_pred)
-        print(df_confusion)
         EvaluationMeasure.plot_confusion_matrix(df_confusion, normalized=False)
 
     def plot_confusion_matrix(df_confusion, normalized = False, title='Matriz de confusión', cmap=plt.cm.gray_r):
