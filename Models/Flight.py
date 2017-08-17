@@ -46,7 +46,7 @@ class Flight:
 
     def get_random_forest_property_array(self):
         properties = [str(self.month), str(self.origin_airport_name), str(self.destination_airport_name), str(self.airline_id),
-                str(self.day_of_week),str(self.get_departure_time_hour()), str(self.tail_number), str(self.day_of_month),
+                str(self.day_of_week),str(self.get_departure_time_hour()), str(self.tail_number),
                 float(self.elapsed_time), float(self.delayed)]
         if self.holiday is not None:
             properties.insert(len(properties) - 1, float(self.holiday))

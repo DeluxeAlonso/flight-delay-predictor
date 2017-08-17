@@ -16,7 +16,7 @@ from sklearn.preprocessing import Normalizer
 seed = 7
 num_trees = 25
 max_features = 8
-n_splits = 5
+n_splits = 3
 
 class RandomForest:
     def get_property_data_frame(dataset, one_hot_encoding = False):
@@ -91,9 +91,9 @@ class RandomForest:
         ts_df = h2o.H2OFrame(x_test)
         tr_df = h2o.H2OFrame(x)
 
-        training_columns = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7','C8', 'C9', 'C10']
-        response_column = 'C11'
-        model = H2ORandomForestEstimator(balance_classes=True, ntrees=num_trees, max_depth=20, nfolds=5)
+        training_columns = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7','C8', 'C9']
+        response_column = 'C10'
+        model = H2ORandomForestEstimator(ntrees=num_trees, max_depth=20, nfolds=n_splits)
         model.train(x=training_columns, y=response_column, training_frame=tr_df, validation_frame=ts_df)
         predictions = model.predict(ts_df)
         model.show()
@@ -107,3 +107,21 @@ class RandomForest:
                 predictions_array.append(0.0)
             probabilities_array.append(predictions[i][0])
         return predictions_array, probabilities_array
+
+    def grid_search(training_df, attribute_property_length):
+        h2o.init()
+        h2o.connect()
+        training_array = training_df.values
+        x = training_array[:, 0:attribute_property_length]
+        y = training_array[:, attribute_property_length - 1]
+        tr_df = h2o.H2OFrame(x)
+        training_columns = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10']
+        response_column = 'C11'
+        hyper_parameters = {'ntrees': [5, 10, 20, 30],
+                            'max_depth': [5, 10, 20, 30]}
+
+        random_plus_manual = H2OGridSearch(H2ORandomForestEstimator(nfolds=5),
+                      hyper_parameters,
+                      grid_id="random_plus_manual")
+        random_plus_manual.train(x=training_columns, y=response_column, training_frame=tr_df)
+        random_plus_manual.show()

@@ -47,8 +47,12 @@ class Main:
         print('First row data date: {0}'.format(dataset[0].get_numerical_property_array()))
         print('Loaded data file {0} with {1} rows'.format(training_filename, len(dataset)))
         print('Number of delayes flights {0}'.format(len(separated_dataset[1])))
-        #expl.show_flights_per_airport(dataset)
-        expl.show_delays_per_holiday(dataset, normed=True)
+        expl.show_flights_per_airport(dataset)
+        #expl.show_delays_per_holiday(dataset, normed=True)
+        #expl.show_delays_per_dep_hour(dataset)
+        #expl.show_delays_per_month(dataset,normed=True)
+        #expl.show_delays_per_day_of_week(dataset, normed=True)
+        #expl.show_delay_reason_pie_chart('Datasets/NewYork/Training/merged_training.csv')
 
     def data_analysis(self):
         filename = 'Datasets/NewYork/Training/merged_training.csv'

@@ -91,4 +91,4 @@ class DatasetProcessing:
         wr = csv.writer(open(filename, "w+"))
         wr.writerows(dataset_list)
 
-DatasetProcessing().process_training_dataset()
+DatasetProcessing().process_testing_dataset()

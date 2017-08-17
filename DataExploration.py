@@ -15,7 +15,15 @@ class DataExploration:
             print("%d NULL values are found in column %s" % (dataset[col].isnull().sum().sum(), col))
         print(dataset.columns.values)
 
-    def show_delays_per_month(dataset):
+    def generate_flight_bar_tuples(x, y, max_range):
+        delayed_flights = ()
+        total_flights = ()
+        for i in range(max_range):
+            delayed_flights += (x[i],)
+            total_flights += (y[i],)
+        return delayed_flights, total_flights
+
+    def show_delays_per_month(dataset, normed=False):
         x = [0] * n_months
         y = [0] * n_months
         for i in range(len(dataset)):
@@ -24,6 +32,10 @@ class DataExploration:
             y[index] += 1
             if property_array[-1] == 1.0:
                 x[index] += 1
+        if normed:
+            for i in range(len(y)):
+                x[i] = x[i] / y[i]
+                y[i] = 1.0
         ind = np.arange(n_months)
         fig, ax = plt.subplots()
         delayed_flights_tuple, total_flights_tuple = DataExploration.generate_flight_bar_tuples(x, y, n_months)
@@ -36,15 +48,7 @@ class DataExploration:
         ax.legend((delayed_flights_bar[0], total_flights_bar[0]), ('Viajes retrasados', 'Viajes totales'))
         plt.show()
 
-    def generate_flight_bar_tuples(x, y, max_range):
-        delayed_flights = ()
-        total_flights = ()
-        for i in range(max_range):
-            delayed_flights += (x[i],)
-            total_flights += (y[i],)
-        return delayed_flights, total_flights
-
-    def show_delays_per_day_of_week(dataset):
+    def show_delays_per_day_of_week(dataset, normed=False):
         x = [0] * n_days_per_week
         y = [0] * n_days_per_week
         for i in range(len(dataset)):
@@ -53,6 +57,10 @@ class DataExploration:
             y[index] += 1
             if property_array[-1] == 1.0:
                 x[index] += 1
+        if normed:
+            for i in range(len(y)):
+                x[i] = x[i] / y[i]
+                y[i] = 1.0
         ind = np.arange(n_days_per_week)
         fig, ax = plt.subplots()
         delayed_flights_tuple, total_flights_tuple = DataExploration.generate_flight_bar_tuples(x, y, n_days_per_week)
@@ -92,9 +100,36 @@ class DataExploration:
         ax.legend((delayed_flights_bar[0], total_flights_bar[0]), ('Viajes retrasados', 'Viajes totales'))
         plt.show()
 
+    def show_delays_per_dep_hour(dataset, normed=False):
+        x = [0] * 24
+        y = [0] * 24
+        for i in range(len(dataset)):
+            flight = dataset[i]
+            property_array = flight.get_categorical_property_array()
+            index = int(flight.get_departure_time_hour())
+            y[index] += 1
+            if property_array[-1] == 1.0:
+                x[index] += 1
+        if normed:
+            for i in range(len(y)):
+                x[i] = x[i] / y[i]
+                y[i] = 1.0
+        ind = np.arange(24)
+        fig, ax = plt.subplots()
+        delayed_flights_tuple, total_flights_tuple = DataExploration.generate_flight_bar_tuples(x, y, 24)
+        delayed_flights_bar = ax.bar(ind, delayed_flights_tuple, bar_width, color='r')
+        total_flights_bar = ax.bar(ind + bar_width, total_flights_tuple, bar_width, color='y')
+        ax.set_ylabel('Cantidad de viajes')
+        ax.set_title('Hora de despegue')
+        ax.set_xticks(ind + bar_width / 2)
+        ax.set_xticklabels(('00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11',
+                            '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'))
+        ax.legend((delayed_flights_bar[0], total_flights_bar[0]), ('Viajes retrasados', 'Viajes totales'))
+        plt.show()
+
     def show_flights_per_airport(dataset):
         new_dataset = []
-        airports_limit = 45 #top limit of busiest Airports
+        airports_limit = 10 #top limit of busiest Airports
         x = {}
         for i in range(len(dataset)):
             origin_airport_name = dataset[i].origin_airport_name
@@ -111,6 +146,39 @@ class DataExploration:
             flight_qty += x[key]
         print("Total flights in bussiest airports: {0}".format(flight_qty))
         print("% of flights in bussiest airports: {0}%".format( (flight_qty / len(dataset)) * 100.00 ))
+
+    def show_delay_reason_pie_chart(filename):
+        dataset = pd.read_csv(filename)
+        print(dataset.head())
+        print(dataset.shape)
+        for col in dataset:
+            print("%d NULL values are found in column %s" % (dataset[col].isnull().sum().sum(), col))
+        print(dataset.columns.values)
+        # [CARRIER_DELAY,WEATHER_DELAY,NAS_DELAY, SECURITY_DELAY, LATE_AIRCRAFT_DELAY]
+        labels = 'Carrier', 'Weather', 'NAS', 'Security', "Aircraft"
+        chart_array = [0, 0, 0, 0, 0]
+        matrix = dataset.as_matrix()
+        for i in range(len(matrix)):
+            if matrix[i][24] >= 15:
+                chart_array[0] += 1
+            elif matrix[i][25] >= 15:
+                chart_array[1] += 1
+            elif matrix[i][26] >= 15:
+                chart_array[2] += 1
+            elif matrix[i][27] >= 15:
+                chart_array[3] += 1
+            elif matrix[i][28] >= 15:
+                chart_array[4] += 1
+        print(dataset.as_matrix()[0])
+        fig1, ax1 = plt.subplots()
+        ax1.pie(chart_array, labels=labels, autopct='%1.1f%%',
+                shadow=False, startangle=90)
+        ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
+
+        plt.show()
+
+    def time_distance_correlation(dataset):
+        print("test")
 
     def pandas_data_visualization(dataset):
         attributes_array = []

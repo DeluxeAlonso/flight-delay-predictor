@@ -144,3 +144,5 @@ class Utils:
         s_date = datetime.datetime.strptime(second_date, "%d/%m/%Y").date()
         delta = s_date - f_date
         return delta.days
+
+Utils().merge_training_csv_files()
