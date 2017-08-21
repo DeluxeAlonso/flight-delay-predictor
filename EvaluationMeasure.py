@@ -76,3 +76,35 @@ class EvaluationMeasure:
         plt.ylabel(df_confusion.index.name)
         plt.xlabel(df_confusion.columns.name)
         plt.show()
+
+    def show_all_evaluation_graphics(test_set, probabilities, predictions):
+        test_values = EvaluationMeasure.get_test_set_values(test_set)
+
+        #ROC Curve
+        false_positive_rate, true_positive_rate, thresholds = roc_curve(test_values, probabilities)
+        roc_auc = auc(false_positive_rate, true_positive_rate)
+        #Confusion Matrix
+        y_actual = pd.Series(test_values, name='Actual')
+        y_pred = pd.Series(predictions, name='Predicted')
+        df_confusion = pd.crosstab(y_actual, y_pred)
+
+        plt.figure(1)
+        plt.title('Receiver Operating Characteristic')
+        plt.plot(false_positive_rate, true_positive_rate, 'b',
+                 label='AUC = %0.2f' % roc_auc)
+        plt.legend(loc='lower right')
+        plt.plot([0, 1], [0, 1], 'r--')
+        plt.xlim([-0.1, 1.2])
+        plt.ylim([-0.1, 1.2])
+        plt.ylabel('True Positive Rate')
+        plt.xlabel('False Positive Rate')
+
+        plt.matshow(df_confusion, cmap=plt.cm.gray_r)
+        plt.colorbar()
+        tick_marks = np.arange(len(df_confusion.columns))
+        plt.xticks(tick_marks, df_confusion.columns, rotation=45)
+        plt.yticks(tick_marks, df_confusion.index)
+        plt.ylabel(df_confusion.index.name)
+        plt.xlabel(df_confusion.columns.name)
+
+        plt.show()

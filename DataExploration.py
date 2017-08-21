@@ -149,12 +149,6 @@ class DataExploration:
 
     def show_delay_reason_pie_chart(filename):
         dataset = pd.read_csv(filename)
-        print(dataset.head())
-        print(dataset.shape)
-        for col in dataset:
-            print("%d NULL values are found in column %s" % (dataset[col].isnull().sum().sum(), col))
-        print(dataset.columns.values)
-        # [CARRIER_DELAY,WEATHER_DELAY,NAS_DELAY, SECURITY_DELAY, LATE_AIRCRAFT_DELAY]
         labels = 'Carrier', 'Weather', 'NAS', 'Security', "Aircraft"
         chart_array = [0, 0, 0, 0, 0]
         matrix = dataset.as_matrix()
@@ -169,16 +163,24 @@ class DataExploration:
                 chart_array[3] += 1
             elif matrix[i][28] >= 15:
                 chart_array[4] += 1
-        print(dataset.as_matrix()[0])
         fig1, ax1 = plt.subplots()
         ax1.pie(chart_array, labels=labels, autopct='%1.1f%%',
                 shadow=False, startangle=90)
-        ax1.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
+        ax1.axis('equal')
         plt.show()
 
-    def time_distance_correlation(dataset):
-        print("test")
+    def show_time_distance_correlation(dataset):
+        elapsed_times = []
+        distances = []
+        for i in range(len(dataset)):
+            flight = dataset[i]
+            elapsed_times.append(flight.elapsed_time)
+            distances.append(flight.distance)
+        area = np.pi
+        plt.ylabel('Distancia')
+        plt.xlabel('Tiempo estimado')
+        plt.scatter(np.array(elapsed_times), np.array(distances), s=area, alpha=0.5)
+        plt.show()
 
     def pandas_data_visualization(dataset):
         attributes_array = []
