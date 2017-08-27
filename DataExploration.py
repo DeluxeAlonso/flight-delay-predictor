@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import math
 
 n_months = 12
 n_days_per_week = 7
@@ -169,6 +170,22 @@ class DataExploration:
         ax1.axis('equal')
         plt.show()
 
+    def show_cancellation_reason_pie_chart(filename):
+        dataset = pd.read_csv(filename)
+        labels = 'Carrier', 'Weather', 'NAS', 'Security'
+        chart_dict = {'A':0, 'B':0, 'C':0, 'D':0}
+        matrix = dataset.as_matrix()
+        for i in range(len(matrix)):
+            cancellation_reason = matrix[i][20]
+            if isinstance(cancellation_reason, str):
+                chart_dict[cancellation_reason] += 1
+        chart_array = [chart_dict['A'], chart_dict['B'], chart_dict['C'], chart_dict['D']]
+        fig1, ax1 = plt.subplots()
+        ax1.pie(chart_array, labels=labels, autopct='%1.1f%%',
+                shadow=False, startangle=90)
+        ax1.axis('equal')
+        plt.show()
+
     def show_time_distance_correlation(dataset):
         elapsed_times = []
         distances = []
@@ -180,12 +197,4 @@ class DataExploration:
         plt.ylabel('Distancia')
         plt.xlabel('Tiempo estimado')
         plt.scatter(np.array(elapsed_times), np.array(distances), s=area, alpha=0.5)
-        plt.show()
-
-    def pandas_data_visualization(dataset):
-        attributes_array = []
-        for i in range(len(dataset)):
-            attributes_array.append(dataset[i].get_random_forest_property_array())
-        df = pd.DataFrame(attributes_array)
-        df.hist()
         plt.show()

@@ -5,19 +5,14 @@ import numpy as np
 import h2o
 from h2o.grid import H2OGridSearch
 from h2o.estimators import H2ORandomForestEstimator
-from sklearn import model_selection
-from sklearn.ensemble import RandomForestClassifier
 from Models.Flight import Flight
 import matplotlib.pyplot as plt
-from imblearn.over_sampling import SMOTE
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.preprocessing import Normalizer
 
 seed = 7
-num_trees = 20
+num_trees = 25
 max_features = 8
 n_splits = 3
-max_depth = 15
+max_depth = 20
 
 class RandomForest:
     def get_property_data_frame(dataset, one_hot_encoding = False):

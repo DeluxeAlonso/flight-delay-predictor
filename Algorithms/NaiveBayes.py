@@ -3,7 +3,7 @@ import math
 from Utils import Utils
 from Models.Flight import Flight
 
-alpha = 0.1
+alpha = 1.0
 
 class NaiveBayes:
     def separate_by_class(dataset, type):
