@@ -55,7 +55,7 @@ class Flight:
             properties.insert(len(properties) - 1, str(self.days_to_holiday))
         return properties
 
-    def get_all_property_array(self):
+    def get_properties_array(self):
         properties = [self.year, self.quarter, self.month, self.day_of_month, self.day_of_week, self.date,
                 self.airline_id, self.tail_number, self.flight_number, self.origin_airport.code,
                 self.origin_airport.name, self.destination_airport.code, self.destination_airport.name, self.departure_time,
