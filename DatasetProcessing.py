@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import csv
-from Utils import Utils
 import numpy as np
+import Constants
+from Utils import Utils
 
 original_training_dataset_filename = 'Datasets/NewYork/Training/merged_training.csv'
 training_dataset_filename = 'Datasets/TrainingDataset.csv'
@@ -32,7 +33,7 @@ class DatasetProcessing:
         new_dataset = []
         x = {}
         for i in range(len(dataset)):
-            origin_airport_name = dataset[i].origin_airport_name
+            origin_airport_name = dataset[i].origin_airport.name
             if origin_airport_name not in x:
                 x[origin_airport_name] = 0
             x[origin_airport_name] += 1
@@ -40,9 +41,9 @@ class DatasetProcessing:
         print(busiest_origin_airports)
         busiest_origin_airports = busiest_origin_airports[:qty]
         for i in range(len(dataset)):
-            origin_airport = dataset[i].origin_airport_name
+            origin_airport_name = dataset[i].origin_airport.name
             busiest_origin_airports = set(busiest_origin_airports)
-            if origin_airport in busiest_origin_airports:
+            if origin_airport_name in busiest_origin_airports:
                 new_dataset.append(dataset[i])
         return new_dataset
 
@@ -52,8 +53,6 @@ class DatasetProcessing:
             elapsed_time_values.append(float(dataset[i].elapsed_time))
         elapsed_time_mean = Utils.mean(elapsed_time_values)
         elapsed_time_stdev = Utils.stdev(elapsed_time_values)
-        print(elapsed_time_mean)
-        print(elapsed_time_stdev)
         if adjust_outliers:
             new_dataset = []
             for i in range(len(dataset)):
@@ -91,4 +90,9 @@ class DatasetProcessing:
         wr = csv.writer(open(filename, "w+"))
         wr.writerows(dataset_list)
 
-DatasetProcessing().process_testing_dataset()
+    def merge_training_files(self):
+        Utils.merge_csv_files(Constants.monthly_training_folder,
+                              Constants.month_labels,
+                              Constants.output_training_merge_filename)
+
+DatasetProcessing().process_training_dataset()

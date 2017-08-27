@@ -1,4 +1,6 @@
 import Utils
+import Constants
+from Models.Airport import Airport
 
 class Flight:
     def __init__(self, year, quarter, month, day_of_month, day_of_week, date, airline_id, tail_number,flight_number,
@@ -13,10 +15,8 @@ class Flight:
         self.airline_id = str(airline_id)
         self.tail_number = str(tail_number)
         self.flight_number = str(flight_number)
-        self.origin_airport_id = str(origin_airport_id)
-        self.origin_airport_name = str(origin_airport_name)
-        self.destination_airport_id = str(destination_airport_id)
-        self.destination_airport_name = str(destination_airport_name)
+        self.origin_airport = Airport(origin_airport_id, origin_airport_name)
+        self.destination_airport = Airport(destination_airport_id, destination_airport_name)
         self.departure_time = self.get_time(departure_time)
         self.real_departure_time = real_departure_time
         self.elapsed_time = str(elapsed_time)
@@ -36,8 +36,8 @@ class Flight:
 
     def get_categorical_property_array(self):
         properties = [str(self.month), str(self.day_of_month),
-                str(self.day_of_week), str(self.origin_airport_name),
-                str(self.airline_id), str(self.destination_airport_name),
+                str(self.day_of_week), str(self.origin_airport.name),
+                str(self.airline_id), str(self.destination_airport.name),
                 str(self.get_departure_time_hour()), str(self.tail_number),
                 float(self.delayed)]
         if self.holiday is not None:
@@ -45,8 +45,8 @@ class Flight:
         return properties
 
     def get_random_forest_property_array(self):
-        properties = [str(self.month), str(self.day_of_month),str(self.origin_airport_name),
-                      str(self.destination_airport_name), str(self.day_of_week),
+        properties = [str(self.month), str(self.day_of_month),str(self.origin_airport.name),
+                      str(self.destination_airport.name), str(self.day_of_week),
                       str(self.get_departure_time_hour()), str(self.flight_number),
                       str(self.tail_number), float(self.elapsed_time), float(self.delayed)]
         if self.holiday is not None:
@@ -57,8 +57,8 @@ class Flight:
 
     def get_all_property_array(self):
         properties = [self.year, self.quarter, self.month, self.day_of_month, self.day_of_week, self.date,
-                self.airline_id, self.tail_number, self.flight_number, self.origin_airport_id,
-                self.origin_airport_name, self.destination_airport_id, self.destination_airport_name, self.departure_time,
+                self.airline_id, self.tail_number, self.flight_number, self.origin_airport.code,
+                self.origin_airport.name, self.destination_airport.code, self.destination_airport.name, self.departure_time,
                 self.real_departure_time, self.elapsed_time, self.distance, self.delayed]
         if self.holiday is not None:
             properties.insert(len(properties) - 1, float(self.holiday))
@@ -131,9 +131,9 @@ class Flight:
         #0:Near day, 1:Near including day, 2: Only prior date, 3:only post date
         self.holiday = '0'
         if self.year == "2015":
-            holidays = Utils.holidays_2015["national"]
+            holidays = Constants.holidays_2015["national"]
         else:
-            holidays = Utils.holidays_2016["national"]
+            holidays = Constants.holidays_2016["national"]
         if type == 0:
             prior_date, post_date = Utils.Utils.get_near_dates(self.day_of_month, self.month, self.year)
             if prior_date in holidays or post_date in holidays:
@@ -157,9 +157,9 @@ class Flight:
         evaluated_days = []
         formatted_date = Utils.Utils.get_date(self.day_of_month, self.month, self.year)
         if self.year == "2015":
-            holidays = Utils.national_holidays_2015
+            holidays = Constants.national_holidays_2015
         else:
-            holidays = Utils.national_holidays_2016
+            holidays = Constants.national_holidays_2016
         for i in range(len(holidays)):
             days_qty = abs(Utils.Utils.days_difference_between_dates(formatted_date, holidays[i]))
             evaluated_days.append(days_qty)

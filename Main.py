@@ -4,6 +4,7 @@ from DataExploration import DataExploration as expl
 from EvaluationMeasure import EvaluationMeasure as eval
 from Utils import Utils
 
+original_training_filename = 'Datasets/NewYork/Training/merged_training.csv'
 training_filename = 'Datasets/TrainingDataset.csv'
 testing_filename = 'Datasets/TestingDataset.csv'
 
@@ -20,8 +21,7 @@ class Main:
         # Model testing
         predictions, probabilities = NaiveBayes.get_predictions(summaries, testing_dataset, prior_probability)
         eval.show_evaluation_measure_values(testing_dataset, predictions)
-        eval.show_roc_curve(testing_dataset, probabilities)
-        #eval.show_confussion_matrix(testing_dataset, predictions)
+        eval.show_all_evaluation_graphics(testing_dataset, probabilities, predictions)
 
     def random_forest_grid_search(self):
         training_dataset = Utils.load_processed_dataset(training_filename)
@@ -36,26 +36,18 @@ class Main:
         predictions, probabilities = RandomForest.get_h2o_predictions(training_dataset, testing_dataset,
                                                    random_forest_property_length)
         eval.show_evaluation_measure_values(testing_dataset, predictions)
-        eval.show_roc_curve(testing_dataset, probabilities)
-        #eval.show_confussion_matrix(testing_dataset, predictions)
+        eval.show_all_evaluation_graphics(testing_dataset, probabilities, predictions)
 
     def data_exploration(self):
-        print("data_exploration")
         dataset = Utils.load_processed_dataset(training_filename)
         separated_dataset = NaiveBayes.separate_by_class(dataset, 0)
         print('Separated instances: {0}'.format(separated_dataset))
         print('First row data date: {0}'.format(dataset[0].get_numerical_property_array()))
         print('Loaded data file {0} with {1} rows'.format(training_filename, len(dataset)))
         print('Number of delayes flights {0}'.format(len(separated_dataset[1])))
-        expl.show_flights_per_airport(dataset)
-        #expl.show_delays_per_holiday(dataset, normed=True)
-        #expl.show_delays_per_dep_hour(dataset)
-        #expl.show_delays_per_month(dataset,normed=True)
-        #expl.show_delays_per_day_of_week(dataset, normed=True)
-        #expl.show_delay_reason_pie_chart('Datasets/NewYork/Training/merged_training.csv')
+        expl.show_cancellation_reason_pie_chart(original_training_filename)
 
     def data_analysis(self):
-        filename = 'Datasets/NewYork/Training/merged_training.csv'
-        expl.show_basic_information(filename)
+        expl.show_basic_information(original_training_filename)
 
-Main().random_forest_predictor()
+Main().naive_bayes_predictor()
