@@ -95,4 +95,4 @@ class DatasetProcessing:
                               Constants.month_labels,
                               Constants.output_training_merge_filename)
 
-DatasetProcessing().process_training_dataset()
+DatasetProcessing().process_testing_dataset()
