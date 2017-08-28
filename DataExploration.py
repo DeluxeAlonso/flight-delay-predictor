@@ -80,7 +80,7 @@ class DataExploration:
         for i in range(len(dataset)):
             flight = dataset[i]
             property_array = flight.get_categorical_property_array()
-            if flight.holiday == '1':
+            if flight.holiday == '1' or flight.holiday == '1.0':
                 y[0] += 1
                 if property_array[-1] == 1.0:
                     x[0] += 1
@@ -133,7 +133,7 @@ class DataExploration:
         airports_limit = 10 #top limit of busiest Airports
         x = {}
         for i in range(len(dataset)):
-            origin_airport_name = dataset[i].origin_airport_name
+            origin_airport_name = dataset[i].origin_airport.name
             if origin_airport_name not in x:
                 x[origin_airport_name] = 0
             x[origin_airport_name] += 1
@@ -141,6 +141,7 @@ class DataExploration:
         print("Total count of airports: {0}".format(len(x)))
         busiest_origin_airports = sorted(x, key=x.__getitem__, reverse=True)
         busiest_origin_airports = busiest_origin_airports[:airports_limit]
+        print(x)
         flight_qty = 0
         print("bussiest_origin_airports: {0}".format(busiest_origin_airports))
         for key in busiest_origin_airports:

@@ -3,8 +3,11 @@ import math
 import datetime
 import pandas as pd
 from Models.Flight import Flight
+from enum import Enum
 
-feature_engineering = 1 # 0:Holiday, 1:Days to holiday
+class FeatureEngineering(Enum):
+    HOLIDAY = 0
+    DAYSTOHOLIDAY = 1
 
 class Utils:
     def load_csv(filename, include_cancelled=False):
@@ -40,7 +43,7 @@ class Utils:
                                                  dataset[i][23]))
         return proccessed_dataset
 
-    def load_processed_dataset(filename):
+    def load_processed_dataset(filename, feature=FeatureEngineering.DAYSTOHOLIDAY):
         lines = csv.reader(open(filename, "r"))
         dataset = list(lines)
         proccessed_dataset = []
@@ -55,7 +58,7 @@ class Utils:
                                 dataset[i][14], dataset[i][15],
                                 dataset[i][16])
             if dataset[i][17] is not None:
-                if feature_engineering == 0:
+                if feature == FeatureEngineering.HOLIDAY:
                     flight.holiday = dataset[i][17]
                 else:
                     flight.days_to_holiday = dataset[i][17]
