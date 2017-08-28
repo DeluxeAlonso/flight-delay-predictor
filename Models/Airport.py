@@ -1,6 +1,9 @@
 import Utils
+from Models.Station import Station
 
-class Airport:
-    def __init__(self, code, name):
-        self.code = str(code)
-        self.name = str(name)
+class Airport(Station):
+    def has_location(self):
+        if self.longitude and self.longitude:
+            return True
+        else:
+            return False

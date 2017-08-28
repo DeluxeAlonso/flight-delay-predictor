@@ -86,7 +86,7 @@ class DatasetProcessing:
     def create_processed_dataset(dataset, filename):
         dataset_list = []
         for i in range(len(dataset)):
-            dataset_list.append(dataset[i].get_all_property_array())
+            dataset_list.append(dataset[i].get_properties_array())
         wr = csv.writer(open(filename, "w+"))
         wr.writerows(dataset_list)
 
@@ -95,4 +95,4 @@ class DatasetProcessing:
                               Constants.month_labels,
                               Constants.output_training_merge_filename)
 
-DatasetProcessing().process_training_dataset()
+DatasetProcessing().process_testing_dataset()

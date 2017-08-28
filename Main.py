@@ -2,7 +2,7 @@ from Algorithms.NaiveBayes import NaiveBayes
 from Algorithms.RandomForest import RandomForest
 from DataExploration import DataExploration as expl
 from EvaluationMeasure import EvaluationMeasure as eval
-from Utils import Utils
+from Utils import Utils, FeatureEngineering
 
 original_training_filename = 'Datasets/NewYork/Training/merged_training.csv'
 training_filename = 'Datasets/TrainingDataset.csv'
@@ -39,15 +39,15 @@ class Main:
         eval.show_all_evaluation_graphics(testing_dataset, probabilities, predictions)
 
     def data_exploration(self):
-        dataset = Utils.load_processed_dataset(training_filename)
+        dataset = Utils.load_processed_dataset(training_filename, feature=FeatureEngineering.HOLIDAY)
         separated_dataset = NaiveBayes.separate_by_class(dataset, 0)
         print('Separated instances: {0}'.format(separated_dataset))
         print('First row data date: {0}'.format(dataset[0].get_numerical_property_array()))
         print('Loaded data file {0} with {1} rows'.format(training_filename, len(dataset)))
         print('Number of delayes flights {0}'.format(len(separated_dataset[1])))
-        expl.show_cancellation_reason_pie_chart(original_training_filename)
+        expl.show_delays_per_holiday(dataset)
 
     def data_analysis(self):
         expl.show_basic_information(original_training_filename)
 
-Main().naive_bayes_predictor()
+Main().data_exploration()
