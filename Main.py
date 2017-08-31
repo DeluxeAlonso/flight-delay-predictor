@@ -39,7 +39,7 @@ class Main:
         eval.show_all_evaluation_graphics(testing_dataset, probabilities, predictions)
 
     def data_exploration(self):
-        dataset = Utils.load_processed_dataset(training_filename, feature=FeatureEngineering.HOLIDAY)
+        dataset = Utils.load_processed_dataset(training_filename)
         separated_dataset = NaiveBayes.separate_by_class(dataset, 0)
         print('Separated instances: {0}'.format(separated_dataset))
         print('First row data date: {0}'.format(dataset[0].get_numerical_property_array()))
@@ -50,4 +50,4 @@ class Main:
     def data_analysis(self):
         expl.show_basic_information(original_training_filename)
 
-Main().data_exploration()
+Main().naive_bayes_predictor()
