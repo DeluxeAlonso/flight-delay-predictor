@@ -19,6 +19,10 @@ weather_daily_training_labels = ["201501daily", "201502daily", "201503daily", "2
 weather_daily_testing_labels = ["201601daily", "201602daily", "201603daily", "201604daily",
                                  "201605daily", "201606daily", "201607daily", "201608daily",
                                  "201609daily", "201610daily", "201611daily", "201612daily"]
+output_training_weather_merged_filename = "Datasets/NewYork/Weather/2015/Daily/merged_training.csv"
+output_testing_weather_merged_filename = "Datasets/NewYork/Weather/2016/Daily/merged_testing.csv"
+output_training_weather_filename = "Datasets/NewYork/Weather/2015/Daily/TrainingWeatherDataset.csv"
+output_testing_weather_filename = "Datasets/NewYork/Weather/2016/Daily/TestingWeatherDataset.csv"
 
 #Holiday Feature
 

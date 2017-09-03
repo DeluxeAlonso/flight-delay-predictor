@@ -1,6 +1,8 @@
 import csv
 import pandas as pd
+import Constants
 from Models.Airport import Airport, Station
+from Models.Weather import Weather
 from Utils import Utils
 
 original_stations_filename_2015 = 'WeatherMappingFiles/Stations/2015stations.txt'
@@ -14,13 +16,25 @@ testing_filename = 'Datasets/TestingDataset.csv'
 output_testing_airports_filename = 'WeatherMappingFiles/testing_airports.csv'
 
 class WeatherMapping:
-    def map_weather_fatures(self):
+    def map_weather_features(self):
+        training_stations, testing_stations, training_airports, testing_airports = WeatherMapping.map_variables()
+        Utils.merge_csv_files(Constants.weather_daily_training_folder, Constants.weather_daily_training_labels,
+                              Constants.output_training_weather_merged_filename, file_ext=".txt")
+        Utils.merge_csv_files(Constants.weather_daily_testing_folder, Constants.weather_daily_testing_labels,
+                              Constants.output_testing_weather_merged_filename, file_ext=".txt")
+        training_weather = WeatherMapping.create_weather_file(training_airports, Constants.output_training_weather_merged_filename,
+                                           Constants.output_training_weather_filename)
+        testing_weather = WeatherMapping.create_weather_file(testing_airports, Constants.output_testing_weather_merged_filename,
+                                           Constants.output_testing_weather_filename)
+
+    def map_variables():
         training_stations = WeatherMapping.map_stations(original_stations_filename_2015, output_stations_filename_2015)
         testing_stations = WeatherMapping.map_stations(original_stations_filename_2016, output_stations_filename_2016)
         training_airports = WeatherMapping.map_airports(training_filename, output_training_airports_filename)
         testing_airports = WeatherMapping.map_airports(testing_filename, output_testing_airports_filename)
         WeatherMapping.map_airports_wban(training_airports, training_stations, output_training_airports_filename)
         WeatherMapping.map_airports_wban(testing_airports, testing_stations, output_testing_airports_filename)
+        return training_stations, testing_stations, training_airports, testing_airports
 
     def map_stations(filename, output_filename):
         with open(filename, "r") as f:
@@ -83,5 +97,27 @@ class WeatherMapping:
             if index != -1:
                 airports[i].wban = stations[index].wban
         WeatherMapping.create_airports_file(airports, output_filename)
+        return airports
 
-WeatherMapping().map_weather_fatures()
+    def create_weather_file(airports, filename, output_filename):
+        weather_list = []
+        airport_wbans = list(map(lambda x: x.wban, airports))
+        df = pd.read_csv(filename)
+        header = list(df.columns.values)
+        df = df.as_matrix()
+        for i in range(len(df)):
+            w = df[i]
+            wban = w[header.index("WBAN")]
+            if str(wban) in airport_wbans:
+                weather = Weather(wban, w[header.index("YearMonthDay")], w[header.index("Tmax")],
+                                  w[header.index("Tmin")], w[header.index("Tavg")],
+                                  w[header.index("SnowFall")], w[header.index("PrecipTotal")],
+                                  w[header.index("StnPressure")], w[header.index("AvgSpeed")])
+                weather_list.append(weather.get_properties_array())
+        wr = csv.writer(open(output_filename, "w+"))
+        wr.writerow(['WBAN', 'DATE', 'TMIN', 'TAVG', 'TMAX', 'SNOWFALL', 'WATER', 'PRESSURE', 'SPEED'])
+        wr.writerows(weather_list)
+        return weather_list
+
+
+WeatherMapping().map_weather_features()
