@@ -67,10 +67,10 @@ class Utils:
 
     # Files Handler
 
-    def merge_csv_files(file_prefix, month_labels, output_filename):
-        results = pd.read_csv(file_prefix + month_labels[0] + ".csv").dropna(how='all')
+    def merge_csv_files(file_prefix, month_labels, output_filename, file_ext=".csv"):
+        results = pd.read_csv(file_prefix + month_labels[0] + file_ext).dropna(how='all')
         for i in range(1, len(month_labels)):
-            namedf = pd.read_csv(file_prefix + month_labels[i] + ".csv").dropna(how='all')
+            namedf = pd.read_csv(file_prefix + month_labels[i] + file_ext).dropna(how='all')
             results = results.append(namedf)
         results.to_csv(output_filename, encoding='utf-8')
 
