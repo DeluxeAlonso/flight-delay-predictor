@@ -1,6 +1,7 @@
 import Utils
 import Constants
 from Models.Airport import Airport
+from Models.Weather import Weather
 
 class Flight:
     def __init__(self, year, quarter, month, day_of_month, day_of_week, date, airline_id, tail_number,flight_number,
@@ -27,11 +28,14 @@ class Flight:
         #Feature Engineering
         self.holiday = None
         self.days_to_holiday = None
+        self.weather = None
 
     def get_numerical_property_array(self):
         properties = [float(self.elapsed_time), float(self.delayed)]
         if self.days_to_holiday is not None:
             properties.insert(len(properties) - 1, float(self.days_to_holiday))
+        if self.weather is not None:
+            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_properties_array_without_wban_date()
         return properties
 
     def get_categorical_property_array(self):
@@ -53,6 +57,8 @@ class Flight:
             properties.insert(len(properties) - 1, float(self.holiday))
         if self.days_to_holiday is not None:
             properties.insert(len(properties) - 1, str(self.days_to_holiday))
+        if self.weather is not None:
+            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_properties_array_without_wban_date()
         return properties
 
     def get_properties_array(self):
@@ -64,6 +70,10 @@ class Flight:
             properties.insert(len(properties) - 1, float(self.holiday))
         if self.days_to_holiday is not None:
             properties.insert(len(properties) - 1, str(self.days_to_holiday))
+        if self.origin_airport.wban is not None:
+            properties.insert(len(properties) - 1, float(self.origin_airport.wban))
+        if self.weather is not None:
+            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_properties_array_without_wban_date()
         return properties
 
     def get_departure_time_hour(self):
