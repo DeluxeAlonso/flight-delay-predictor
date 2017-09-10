@@ -72,8 +72,13 @@ class Utils:
                     weather = Weather(dataset[i][18], flight.date, dataset[i][21],
                                   dataset[i][19], dataset[i][20], dataset[i][22],
                                   dataset[i][23], dataset[i][24], dataset[i][25])
-                    print(dataset[i][26])
-                    weather.rained = float(dataset[i][26])
+                    weather.code = flight.delayed
+                    weather.rain = float(dataset[i][26])
+                    weather.thunderstorm = float(dataset[i][27])
+                    weather.snow = float(dataset[i][28])
+                    weather.fog = float(dataset[i][29])
+                    weather.mist = float(dataset[i][30])
+                    weather.freezing = float(dataset[i][31])
                 flight.weather = weather
             proccessed_dataset.append(flight)
         return proccessed_dataset
@@ -137,7 +142,9 @@ class Utils:
         return sum(values) / float(len(values))
 
     def stdev(values):
+        print(values)
         values = [x for x in values if x is not None]
+        print(values)
         avg = Utils.mean(values)
         variance = sum([pow(x - avg, 2) for x in values]) / float(len(values) - 1)
         return math.sqrt(variance)

@@ -73,7 +73,7 @@ class Flight:
         if self.origin_airport.wban is not None:
             properties.insert(len(properties) - 1, float(self.origin_airport.wban))
         if self.weather is not None:
-            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_properties_array_without_wban_date()
+            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_properties_for_dataset()
         return properties
 
     def get_departure_time_hour(self):

@@ -9,7 +9,7 @@ from Models.Flight import Flight
 import matplotlib.pyplot as plt
 
 seed = 7
-num_trees = 25
+num_trees = 60
 max_features = 8
 n_splits = 3
 max_depth = 20
@@ -39,12 +39,14 @@ class RandomForest:
         tr_df = h2o.H2OFrame(x)
 
         training_columns = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7','C8', 'C9', 'C10',
-                            'C11', 'C12', 'C13', 'C14', 'C15', 'C16', 'C17']
-        response_column = 'C18'
+                            'C11', 'C12', 'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19',
+                            'C20', 'C21', 'C22']
+        response_column = 'C23'
         model = H2ORandomForestEstimator(ntrees=num_trees, max_depth=max_depth, nfolds=n_splits)
         model.train(x=training_columns, y=response_column, training_frame=tr_df, validation_frame=ts_df)
         predictions = model.predict(ts_df)
         model.show()
+        print(model.varimp(True))
         predictions_array = []
         probabilities_array = []
         predictions = predictions.as_data_frame().values.tolist()

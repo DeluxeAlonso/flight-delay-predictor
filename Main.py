@@ -50,4 +50,4 @@ class Main:
     def data_analysis(self):
         expl.show_basic_information(training_filename)
 
-Main().data_exploration()
+Main().random_forest_predictor()

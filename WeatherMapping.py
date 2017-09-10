@@ -105,6 +105,7 @@ class WeatherMapping:
 
     # Creates a dataset with the weather features
     def create_weather_file(airports, filename, output_filename):
+        print("create")
         weather_list = []
         weather_property_list = []
         airport_wbans = list(map(lambda x: str(x.wban), airports))
