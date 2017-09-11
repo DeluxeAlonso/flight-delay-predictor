@@ -142,9 +142,7 @@ class Utils:
         return sum(values) / float(len(values))
 
     def stdev(values):
-        print(values)
         values = [x for x in values if x is not None]
-        print(values)
         avg = Utils.mean(values)
         variance = sum([pow(x - avg, 2) for x in values]) / float(len(values) - 1)
         return math.sqrt(variance)
