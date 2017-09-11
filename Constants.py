@@ -9,6 +9,21 @@ month_labels = ["january", "february", "march", "april", "may",
 output_training_merge_filename = "Datasets/NewYork/Training/merged_training.csv"
 output_testing_merge_filename = "Datasets/NewYork/Testing/merged_testing.csv"
 
+#Weather Files
+
+weather_daily_training_folder = "Datasets/NewYork/Weather/2015/Daily/Original/"
+weather_daily_testing_folder = "Datasets/NewYork/Weather/2016/Daily/Original/"
+weather_daily_training_labels = ["201501daily", "201502daily", "201503daily", "201504daily",
+                                 "201505daily", "201506daily", "201507daily", "201508daily",
+                                 "201509daily", "201510daily", "201511daily", "201512daily"]
+weather_daily_testing_labels = ["201601daily", "201602daily", "201603daily", "201604daily",
+                                 "201605daily", "201606daily", "201607daily", "201608daily",
+                                 "201609daily", "201610daily", "201611daily", "201612daily"]
+output_training_weather_merged_filename = "Datasets/NewYork/Weather/2015/Daily/merged_training.csv"
+output_testing_weather_merged_filename = "Datasets/NewYork/Weather/2016/Daily/merged_testing.csv"
+output_training_weather_filename = "Datasets/NewYork/Weather/2015/Daily/TrainingWeatherDataset.csv"
+output_testing_weather_filename = "Datasets/NewYork/Weather/2016/Daily/TestingWeatherDataset.csv"
+
 #Holiday Feature
 
 holidays_2015 = {"national": ["02/01/2015", "12/02/2015", "16/02/2015", "10/05/2015",

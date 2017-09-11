@@ -10,8 +10,8 @@ testing_filename = 'Datasets/TestingDataset.csv'
 
 class Main:
     def naive_bayes_predictor(self):
-        training_dataset = Utils.load_processed_dataset(training_filename)
-        testing_dataset = Utils.load_processed_dataset(testing_filename)
+        training_dataset = Utils.load_processed_dataset(training_filename, include_weather=True)
+        testing_dataset = Utils.load_processed_dataset(testing_filename, include_weather=True)
         # Model preparation
         separated_training_dataset = NaiveBayes.separate_by_class(training_dataset, 0)
         prior_probability = len(separated_training_dataset[0]) / (len(training_dataset))
@@ -30,8 +30,8 @@ class Main:
         RandomForest.grid_search(training_df, random_forest_property_length)
 
     def random_forest_predictor(self):
-        training_dataset = Utils.load_processed_dataset(training_filename)
-        testing_dataset = Utils.load_processed_dataset(testing_filename)
+        training_dataset = Utils.load_processed_dataset(training_filename, include_weather=True)
+        testing_dataset = Utils.load_processed_dataset(testing_filename, include_weather=True)
         random_forest_property_length = len(training_dataset[0].get_random_forest_property_array())
         predictions, probabilities = RandomForest.get_h2o_predictions(training_dataset, testing_dataset,
                                                    random_forest_property_length)
@@ -39,15 +39,15 @@ class Main:
         eval.show_all_evaluation_graphics(testing_dataset, probabilities, predictions)
 
     def data_exploration(self):
-        dataset = Utils.load_processed_dataset(training_filename, feature=FeatureEngineering.HOLIDAY)
+        dataset = Utils.load_processed_dataset(training_filename, include_weather=True)
         separated_dataset = NaiveBayes.separate_by_class(dataset, 0)
         print('Separated instances: {0}'.format(separated_dataset))
         print('First row data date: {0}'.format(dataset[0].get_numerical_property_array()))
         print('Loaded data file {0} with {1} rows'.format(training_filename, len(dataset)))
         print('Number of delayes flights {0}'.format(len(separated_dataset[1])))
-        expl.show_delays_per_holiday(dataset)
+        expl.show_delays_per_raining_day(dataset)
 
     def data_analysis(self):
-        expl.show_basic_information(original_training_filename)
+        expl.show_basic_information(training_filename)
 
-Main().data_exploration()
+Main().naive_bayes_predictor()

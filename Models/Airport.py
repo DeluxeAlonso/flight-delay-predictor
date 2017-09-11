@@ -1,4 +1,3 @@
-import Utils
 from Models.Station import Station
 
 class Airport(Station):
