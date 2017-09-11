@@ -3,6 +3,7 @@ import math
 import datetime
 import pandas as pd
 from Models.Flight import Flight
+from Models.Weather import Weather
 from enum import Enum
 
 class FeatureEngineering(Enum):
@@ -43,7 +44,7 @@ class Utils:
                                                  dataset[i][23]))
         return proccessed_dataset
 
-    def load_processed_dataset(filename, feature=FeatureEngineering.DAYSTOHOLIDAY):
+    def load_processed_dataset(filename, feature=FeatureEngineering.DAYSTOHOLIDAY, include_weather=False):
         lines = csv.reader(open(filename, "r"))
         dataset = list(lines)
         proccessed_dataset = []
@@ -62,6 +63,23 @@ class Utils:
                     flight.holiday = dataset[i][17]
                 else:
                     flight.days_to_holiday = dataset[i][17]
+            if dataset[i][18] is not None:
+                flight.origin_airport.wban = Utils.remove_floating_point(dataset[i][18])
+            if include_weather:
+                if len(dataset[i]) < 27:
+                    weather = None
+                else:
+                    weather = Weather(dataset[i][18], flight.date, dataset[i][21],
+                                  dataset[i][19], dataset[i][20], dataset[i][22],
+                                  dataset[i][23], dataset[i][24], dataset[i][25])
+                    weather.code = flight.delayed
+                    weather.rain = float(dataset[i][26])
+                    weather.thunderstorm = float(dataset[i][27])
+                    weather.snow = float(dataset[i][28])
+                    weather.fog = float(dataset[i][29])
+                    weather.mist = float(dataset[i][30])
+                    weather.freezing = float(dataset[i][31])
+                flight.weather = weather
             proccessed_dataset.append(flight)
         return proccessed_dataset
 
@@ -120,9 +138,22 @@ class Utils:
     # Math
 
     def mean(values):
+        values = [x for x in values if x is not None]
         return sum(values) / float(len(values))
 
     def stdev(values):
+        print(values)
+        values = [x for x in values if x is not None]
+        print(values)
         avg = Utils.mean(values)
         variance = sum([pow(x - avg, 2) for x in values]) / float(len(values) - 1)
         return math.sqrt(variance)
+
+    # String
+
+    def remove_floating_point(value):
+        floating_point_pos = value.find('.')
+        if floating_point_pos != -1:
+            return value[0:floating_point_pos]
+        else:
+            return ValueError

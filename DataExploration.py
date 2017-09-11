@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import math
+import seaborn as sns
 
 n_months = 12
 n_days_per_week = 7
@@ -198,4 +199,98 @@ class DataExploration:
         plt.ylabel('Distancia')
         plt.xlabel('Tiempo estimado')
         plt.scatter(np.array(elapsed_times), np.array(distances), s=area, alpha=0.5)
+        plt.show()
+
+    def temperature_box_plot(dataset):
+        avg_temp_values = []
+        for i in range(len(dataset)):
+            if dataset[i].weather and dataset[i].weather.avg_temp is not None:
+                avg_temp_values.append(float(dataset[i].weather.avg_temp))
+        avg_temp_values = np.array(sorted(avg_temp_values))
+        plt.figure()
+        plt.boxplot([avg_temp_values])
+        plt.xticks([1], ['Temperatura'])
+        plt.show()
+
+    def speed_box_plot(dataset):
+        avg_values = []
+        for i in range(len(dataset)):
+            if dataset[i].weather and dataset[i].weather.avg_speed is not None:
+                avg_values.append(float(dataset[i].weather.avg_speed))
+        avg_values = np.array(sorted(avg_values))
+        plt.figure()
+        plt.boxplot([avg_values])
+        plt.xticks([1], ['Viento'])
+        plt.show()
+
+    def pressure_box_plot(dataset):
+        avg_values = []
+        for i in range(len(dataset)):
+            if dataset[i].weather and dataset[i].weather.pressure is not None:
+                avg_values.append(float(dataset[i].weather.pressure))
+        avg_values = np.array(sorted(avg_values))
+        plt.figure()
+        plt.boxplot([avg_values])
+        plt.xticks([1], ['Presión'])
+        plt.show()
+
+    def temperature_density_plot(dataset):
+        avg_temp_values = []
+        for i in range(len(dataset)):
+            if dataset[i].weather and dataset[i].weather.avg_temp is not None and dataset[i].delayed:
+                avg_temp_values.append(float(dataset[i].weather.avg_temp))
+        avg_temp_values = np.array(sorted(avg_temp_values))
+        print("sns")
+        sns.set(color_codes=True)
+        sns.distplot(avg_temp_values)
+        plt.show()
+
+    def speed_density_plot(dataset):
+        avg_values = []
+        for i in range(len(dataset)):
+            if dataset[i].weather and dataset[i].weather.avg_speed is not None and dataset[i].delayed:
+                avg_values.append(float(dataset[i].weather.avg_speed))
+        avg_values = np.array(sorted(avg_values))
+        print("sns")
+        sns.set(color_codes=True)
+        sns.distplot(avg_values)
+        plt.show()
+
+    def pressure_density_plot(dataset):
+        avg_values = []
+        for i in range(len(dataset)):
+            if dataset[i].weather and dataset[i].weather.pressure is not None and dataset[i].delayed:
+                avg_values.append(float(dataset[i].weather.pressure))
+        avg_values = np.array(sorted(avg_values))
+        print("sns")
+        sns.set(color_codes=True)
+        sns.distplot(avg_values)
+        plt.show()
+
+    def show_delays_per_raining_day(dataset, normed=True):
+        x = [0] * 2
+        y = [0] * 2
+        for i in range(len(dataset)):
+            flight = dataset[i]
+            if flight.weather:
+                property_array = dataset[i].get_numerical_property_array()
+                index = int(flight.weather.rained)
+                print(index)
+                y[index] += 1
+                if property_array[-1] == 1.0:
+                    x[index] += 1
+        if normed:
+            for i in range(len(y)):
+                x[i] = x[i] / y[i]
+                y[i] = 1.0
+        ind = np.arange(2)
+        fig, ax = plt.subplots()
+        delayed_flights_tuple, total_flights_tuple = DataExploration.generate_flight_bar_tuples(x, y, 2)
+        delayed_flights_bar = ax.bar(ind, delayed_flights_tuple, bar_width, color='r')
+        total_flights_bar = ax.bar(ind + bar_width, total_flights_tuple, bar_width, color='y')
+        ax.set_ylabel('Cantidad de viajes')
+        ax.set_title('Viajes retrasados')
+        ax.set_xticks(ind + bar_width / 2)
+        ax.set_xticklabels(('Sin Lluvia', 'Con Lluvia'))
+        ax.legend((delayed_flights_bar[0], total_flights_bar[0]), ('Viajes retrasados', 'Viajes totales'))
         plt.show()
