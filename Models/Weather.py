@@ -22,15 +22,29 @@ class Weather:
         return [self.wban, self.date, self.min_temp, self.avg_temp, self.max_temp, self.snowfall,
                 self.water, self.pressure, self.avg_speed, self.code_sum]
 
-    def get_properties_array_without_wban_date(self):
-        return [self.min_temp, self.avg_temp, self.max_temp,
-                self.water, self.pressure, self.avg_speed, self.rain, self.thunderstorm,
-                self.snow, self.fog, self.mist, self.freezing]
+    # DATASET CONSTRUCTION
 
     def get_properties_for_dataset(self):
         return [self.min_temp, self.avg_temp, self.max_temp, self.snowfall,
                 self.water, self.pressure, self.avg_speed, self.rain, self.thunderstorm,
                 self.snow, self.fog, self.mist, self.freezing]
+
+    #RANDOM FOREST
+
+    def get_properties_array_without_wban_date(self):
+        return [self.min_temp, self.avg_temp, self.max_temp,
+                self.water, self.pressure, self.avg_speed, self.rain, self.thunderstorm,
+                self.snow, self.fog, self.mist, self.freezing]
+
+    # NAIVE BAYES
+
+    def get_categorical_properties(self):
+        return [str(self.rain), str(self.thunderstorm), str(self.snow),
+                str(self.fog), str(self.mist), str(self.freezing)]
+
+    def get_numerical_properties(self):
+        return [self.min_temp, self.avg_temp, self.max_temp, self.snowfall,
+                self.water, self.pressure, self.avg_speed]
 
     def process_code_sum(self, code_sum):
         codes = []

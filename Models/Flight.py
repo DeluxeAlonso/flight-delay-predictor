@@ -35,7 +35,9 @@ class Flight:
         if self.days_to_holiday is not None:
             properties.insert(len(properties) - 1, float(self.days_to_holiday))
         if self.weather is not None:
-            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_properties_array_without_wban_date()
+            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_numerical_properties()
+        else:
+            properties[len(properties) - 1:len(properties) - 1] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         return properties
 
     def get_categorical_property_array(self):
@@ -46,6 +48,10 @@ class Flight:
                 float(self.delayed)]
         if self.holiday is not None:
             properties.insert(len(properties) - 1, str(self.holiday))
+        if self.weather is not None:
+            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_categorical_properties()
+        else:
+            properties[len(properties) - 1:len(properties) - 1] = ['', '', '', '', '', '']
         return properties
 
     def get_random_forest_property_array(self):

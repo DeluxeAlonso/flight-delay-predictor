@@ -50,4 +50,4 @@ class Main:
     def data_analysis(self):
         expl.show_basic_information(training_filename)
 
-Main().random_forest_predictor()
+Main().naive_bayes_predictor()

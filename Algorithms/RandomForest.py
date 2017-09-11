@@ -9,7 +9,7 @@ from Models.Flight import Flight
 import matplotlib.pyplot as plt
 
 seed = 7
-num_trees = 60
+num_trees = 15
 max_features = 8
 n_splits = 3
 max_depth = 20
