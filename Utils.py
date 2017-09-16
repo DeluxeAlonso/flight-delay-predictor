@@ -4,11 +4,16 @@ import datetime
 import pandas as pd
 from Models.Flight import Flight
 from Models.Weather import Weather
+from Models.HourlyWeather import HourlyWeather
 from enum import Enum
 
 class FeatureEngineering(Enum):
     HOLIDAY = 0
     DAYSTOHOLIDAY = 1
+
+class WeatherType(Enum):
+    DAILY = 0
+    HOURLY = 1
 
 class Utils:
     def load_csv(filename, include_cancelled=False):
@@ -44,7 +49,8 @@ class Utils:
                                                  dataset[i][23]))
         return proccessed_dataset
 
-    def load_processed_dataset(filename, feature=FeatureEngineering.DAYSTOHOLIDAY, include_weather=False):
+    def load_processed_dataset(filename, feature=FeatureEngineering.DAYSTOHOLIDAY,
+                               include_weather=False, weather_type=WeatherType.DAILY):
         lines = csv.reader(open(filename, "r"))
         dataset = list(lines)
         proccessed_dataset = []
@@ -69,19 +75,65 @@ class Utils:
                 if len(dataset[i]) < 27:
                     weather = None
                 else:
-                    weather = Weather(dataset[i][18], flight.date, dataset[i][21],
-                                  dataset[i][19], dataset[i][20], dataset[i][22],
-                                  dataset[i][23], dataset[i][24], dataset[i][25])
-                    weather.code = flight.delayed
+                    if weather_type == WeatherType.DAILY:
+                        weather = Weather(dataset[i][18], flight.date, dataset[i][21],
+                                          dataset[i][19], dataset[i][20], dataset[i][22],
+                                          dataset[i][23], dataset[i][24], dataset[i][25])
+                    else:
+                        weather = HourlyWeather(dataset[i][18], flight.date, flight.get_departure_time_hour(),
+                                                dataset[i][19], dataset[i][20], dataset[i][21],
+                                                dataset[i][22], dataset[i][23], dataset[i][24],
+                                                dataset[i][25])
                     weather.rain = float(dataset[i][26])
                     weather.thunderstorm = float(dataset[i][27])
                     weather.snow = float(dataset[i][28])
                     weather.fog = float(dataset[i][29])
                     weather.mist = float(dataset[i][30])
                     weather.freezing = float(dataset[i][31])
-                flight.weather = weather
+                if weather_type == WeatherType.DAILY:
+                    flight.weather = weather
+                else:
+                    flight.hourly_weather = weather
             proccessed_dataset.append(flight)
         return proccessed_dataset
+
+    # Weather datasets
+
+    def load_daily_weather_dataset(filename):
+        weather_array = []
+        df = pd.read_csv(filename)
+        header = list(df.columns.values)
+        df = df.fillna('')
+        df = df.as_matrix()
+        for i in range(len(df)):
+            w = df[i]
+            wban = str(w[header.index("WBAN")]).zfill(5)
+            weather = Weather(wban, w[header.index("DATE")], w[header.index("TMAX")],
+                                  w[header.index("TMIN")], w[header.index("TAVG")],
+                                  w[header.index("SNOWFALL")], w[header.index("WATER")],
+                                  w[header.index("PRESSURE")], w[header.index("SPEED")],
+                                  w[header.index("CODESUM")])
+            weather_array.append(weather)
+        return weather_array
+
+    def load_hourly_weather_dataset(filename, include_codesum=False):
+        weather_array = []
+        df = pd.read_csv(filename)
+        header = list(df.columns.values)
+        df = df.fillna('')
+        df = df.as_matrix()
+        for i in range(len(df)):
+            w = df[i]
+            wban = str(w[header.index("WBAN")]).zfill(5)
+            weather = HourlyWeather(wban, w[header.index("DATE")], w[header.index("TIME")],
+                                w[header.index("TEMP")], w[header.index("SKY")],
+                                w[header.index("VISIBILITY")], w[header.index("SPEED")],
+                                w[header.index("PRESSURE")], w[header.index("HUMIDITY")],
+                                w[header.index("ALTIMETER")])
+            if include_codesum:
+                weather.set_codesum(w[header.index("CODESUM")])
+            weather_array.append(weather)
+        return weather_array
 
     # Files Handler
 

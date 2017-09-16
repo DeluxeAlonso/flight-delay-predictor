@@ -1,3 +1,4 @@
+
 class Weather:
     def __init__(self, wban, date, max_temp, min_temp, avg_temp,
                  snowfall, water, pressure, avg_speed, code_sum=''):
@@ -23,21 +24,18 @@ class Weather:
                 self.water, self.pressure, self.avg_speed, self.code_sum]
 
     # DATASET CONSTRUCTION
-
     def get_properties_for_dataset(self):
         return [self.min_temp, self.avg_temp, self.max_temp, self.snowfall,
                 self.water, self.pressure, self.avg_speed, self.rain, self.thunderstorm,
                 self.snow, self.fog, self.mist, self.freezing]
 
     #RANDOM FOREST
-
     def get_properties_array_without_wban_date(self):
         return [self.min_temp, self.avg_temp, self.max_temp,
                 self.water, self.pressure, self.avg_speed, self.rain, self.thunderstorm,
                 self.snow, self.fog, self.mist, self.freezing]
 
     # NAIVE BAYES
-
     def get_categorical_properties(self):
         return [str(self.rain), str(self.thunderstorm), str(self.snow),
                 str(self.fog), str(self.mist), str(self.freezing)]
@@ -47,6 +45,7 @@ class Weather:
                 self.water, self.pressure, self.avg_speed]
 
     def process_code_sum(self, code_sum):
+        print(code_sum)
         codes = []
         code_array = ' '.join(code_sum.split())
         code_array = code_array.split(' ')
@@ -106,9 +105,10 @@ class Weather:
 
     @date.setter
     def date(self, date):
-        date = str(date)
-        year, month, day = date[0:4], date[4:6], date[6:8]
-        date = year + '-' + month + '-' + day
+        if len(str(date).split('-')) < 1:
+            date = str(date)
+            year, month, day = date[0:4], date[4:6], date[6:8]
+            date = year + '-' + month + '-' + day
         self._date = date
 
     @property
@@ -117,6 +117,7 @@ class Weather:
 
     @min_temp.setter
     def min_temp(self, min_temp):
+        min_temp = str(min_temp)
         if min_temp == 'M' or min_temp.strip() == '':
             self._min_temp = None
         else:
@@ -128,6 +129,7 @@ class Weather:
 
     @max_temp.setter
     def max_temp(self, max_temp):
+        max_temp = str(max_temp)
         if max_temp == 'M' or max_temp.strip() == '':
             self._max_temp = None
         else:
@@ -139,6 +141,7 @@ class Weather:
 
     @avg_temp.setter
     def avg_temp(self, avg_temp):
+        avg_temp = str(avg_temp)
         if avg_temp == 'M' or avg_temp.strip() == '':
             self._avg_temp = None
         else:
@@ -150,6 +153,7 @@ class Weather:
 
     @snowfall.setter
     def snowfall(self, snowfall):
+        snowfall = str(snowfall)
         if snowfall.strip() == 'M' or snowfall.strip() == '':
             self._snowfall = None
         elif snowfall.strip() == 'T':
@@ -163,6 +167,7 @@ class Weather:
 
     @water.setter
     def water(self, water):
+        water = str(water)
         if water.strip() == 'M' or water.strip() == '':
             self._water = None
         elif water.strip() == 'T':
@@ -176,6 +181,7 @@ class Weather:
 
     @pressure.setter
     def pressure(self, pressure):
+        pressure = str(pressure)
         if pressure == 'M' or pressure.strip() == '':
             self._pressure = None
         else:
@@ -187,7 +193,9 @@ class Weather:
 
     @avg_speed.setter
     def avg_speed(self, avg_speed):
+        avg_speed = str(avg_speed)
         if avg_speed == 'M' or avg_speed.strip() == '':
             self._avg_speed = None
         else:
             self._avg_speed = float(avg_speed)
+
