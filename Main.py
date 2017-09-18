@@ -2,16 +2,21 @@ from Algorithms.NaiveBayes import NaiveBayes
 from Algorithms.RandomForest import RandomForest
 from DataExploration import DataExploration as expl
 from EvaluationMeasure import EvaluationMeasure as eval
-from Utils import Utils, FeatureEngineering
+from Utils import Utils, FeatureEngineering, WeatherType
 
 original_training_filename = 'Datasets/NewYork/Training/merged_training.csv'
 training_filename = 'Datasets/TrainingDataset.csv'
 testing_filename = 'Datasets/TestingDataset.csv'
 
+weather_hourly_training_filename = 'Datasets/TrainingWeatherHourlyDataset.csv'
+weather_hourly_testing_filename = 'Datasets/TestingWeatherHourlyDataset.csv'
+
 class Main:
     def naive_bayes_predictor(self):
-        training_dataset = Utils.load_processed_dataset(training_filename, include_weather=True)
-        testing_dataset = Utils.load_processed_dataset(testing_filename, include_weather=True)
+        training_dataset = Utils.load_processed_dataset(weather_hourly_training_filename, include_weather=True,
+                                                        weather_type=WeatherType.HOURLY)
+        testing_dataset = Utils.load_processed_dataset(weather_hourly_testing_filename, include_weather=True,
+                                                       weather_type=WeatherType.HOURLY)
         # Model preparation
         separated_training_dataset = NaiveBayes.separate_by_class(training_dataset, 0)
         prior_probability = len(separated_training_dataset[0]) / (len(training_dataset))
@@ -30,8 +35,8 @@ class Main:
         RandomForest.grid_search(training_df, random_forest_property_length)
 
     def random_forest_predictor(self):
-        training_dataset = Utils.load_processed_dataset(training_filename, include_weather=True)
-        testing_dataset = Utils.load_processed_dataset(testing_filename, include_weather=True)
+        training_dataset = Utils.load_processed_dataset(weather_hourly_training_filename, include_weather=True, weather_type=WeatherType.HOURLY)
+        testing_dataset = Utils.load_processed_dataset(weather_hourly_testing_filename, include_weather=True, weather_type=WeatherType.HOURLY)
         random_forest_property_length = len(training_dataset[0].get_random_forest_property_array())
         predictions, probabilities = RandomForest.get_h2o_predictions(training_dataset, testing_dataset,
                                                    random_forest_property_length)

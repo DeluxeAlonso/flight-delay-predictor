@@ -40,8 +40,8 @@ class RandomForest:
 
         training_columns = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7','C8', 'C9', 'C10',
                             'C11', 'C12', 'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19',
-                            'C20', 'C21', 'C22']
-        response_column = 'C23'
+                            'C20', 'C21', 'C22', 'C23']
+        response_column = 'C24'
         model = H2ORandomForestEstimator(ntrees=num_trees, max_depth=max_depth, nfolds=n_splits)
         model.train(x=training_columns, y=response_column, training_frame=tr_df, validation_frame=ts_df)
         predictions = model.predict(ts_df)
@@ -65,9 +65,11 @@ class RandomForest:
         x = training_array[:, 0:attribute_property_length]
         y = training_array[:, attribute_property_length - 1]
         tr_df = h2o.H2OFrame(x)
-        training_columns = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10']
-        response_column = 'C11'
-        hyper_parameters = {'ntrees': [15, 20, 25], 'max_depth': [15, 20]}
+        training_columns = ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'C7', 'C8', 'C9', 'C10',
+                            'C11', 'C12', 'C13', 'C14', 'C15', 'C16', 'C17', 'C18', 'C19',
+                            'C20', 'C21', 'C22', 'C23']
+        response_column = 'C24'
+        hyper_parameters = {'ntrees': [20, 25], 'max_depth': [45, 50, 55]}
         random_plus_manual = H2OGridSearch(H2ORandomForestEstimator(nfolds=n_splits), hyper_parameters)
         random_plus_manual.train(x=training_columns, y=response_column, training_frame=tr_df)
         random_plus_manual.show()

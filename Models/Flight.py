@@ -2,6 +2,7 @@ import Utils
 import Constants
 from Models.Airport import Airport
 from Models.Weather import Weather
+from Models.HourlyWeather import HourlyWeather
 
 class Flight:
     def __init__(self, year, quarter, month, day_of_month, day_of_week, date, airline_id, tail_number,flight_number,
@@ -29,15 +30,20 @@ class Flight:
         self.holiday = None
         self.days_to_holiday = None
         self.weather = None
+        self.hourly_weather = None
 
     def get_numerical_property_array(self):
         properties = [float(self.elapsed_time), float(self.delayed)]
         if self.days_to_holiday is not None:
             properties.insert(len(properties) - 1, float(self.days_to_holiday))
-        if self.weather is not None:
-            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_numerical_properties()
+        #if self.weather is not None:
+        #    properties[len(properties) - 1:len(properties) - 1] = self.weather.get_numerical_properties()
+        #else:
+        #    properties[len(properties) - 1:len(properties) - 1] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+        if self.hourly_weather is not None:
+            properties[len(properties) - 1:len(properties) - 1] = self.hourly_weather.get_numerical_properties()
         else:
-            properties[len(properties) - 1:len(properties) - 1] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+            properties[len(properties) - 1:len(properties) - 1] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
         return properties
 
     def get_categorical_property_array(self):
@@ -48,10 +54,14 @@ class Flight:
                 float(self.delayed)]
         if self.holiday is not None:
             properties.insert(len(properties) - 1, str(self.holiday))
-        if self.weather is not None:
-            properties[len(properties) - 1:len(properties) - 1] = self.weather.get_categorical_properties()
+        #if self.weather is not None:
+        #    properties[len(properties) - 1:len(properties) - 1] = self.weather.get_categorical_properties()
+        #else:
+        #    properties[len(properties) - 1:len(properties) - 1] = ['', '', '', '', '', '']
+        if self.hourly_weather is not None:
+            properties[len(properties) - 1:len(properties) - 1] = self.hourly_weather.get_categorical_properties()
         else:
-            properties[len(properties) - 1:len(properties) - 1] = ['', '', '', '', '', '']
+            properties[len(properties) - 1:len(properties) - 1] = ['', '', '', '', '', '', '']
         return properties
 
     def get_random_forest_property_array(self):
@@ -65,6 +75,20 @@ class Flight:
             properties.insert(len(properties) - 1, str(self.days_to_holiday))
         if self.weather is not None:
             properties[len(properties) - 1:len(properties) - 1] = self.weather.get_properties_array_without_wban_date()
+        if self.hourly_weather is not None:
+            properties[len(properties) - 1:len(properties) - 1] = self.hourly_weather.get_properties_array_without_wban_date()
+        return properties
+
+    def get_corpus_properties(self):
+        properties = [str(self.month), str(self.day_of_month), str(self.day_of_week),
+                      str(self.origin_airport.name), str(self.destination_airport.name),
+                      str(self.get_departure_time_hour()), str(self.flight_number),
+                      str(self.tail_number), float(self.elapsed_time), float(self.delayed)]
+        properties.insert(len(properties) - 1, str(self.days_to_holiday))
+        if self.hourly_weather is not  None:
+            properties[len(properties) - 1:len(properties) - 1] = self.hourly_weather.get_corpus_properties()
+        else:
+            properties[len(properties) - 1:len(properties) - 1] = [None,None,None,None,None,None,None,None,None,None,None]
         return properties
 
     def get_properties_array(self):
@@ -80,6 +104,8 @@ class Flight:
             properties.insert(len(properties) - 1, float(self.origin_airport.wban))
         if self.weather is not None:
             properties[len(properties) - 1:len(properties) - 1] = self.weather.get_properties_for_dataset()
+        if self.hourly_weather is not None:
+            properties[len(properties) - 1:len(properties) - 1] = self.hourly_weather.get_properties_for_dataset()
         return properties
 
     def get_departure_time_hour(self):
