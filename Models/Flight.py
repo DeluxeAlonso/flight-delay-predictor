@@ -206,4 +206,3 @@ class Flight:
             days_qty = abs(Utils.Utils.days_difference_between_dates(formatted_date, holidays[i]))
             evaluated_days.append(days_qty)
         self.days_to_holiday = min(evaluated_days)
-

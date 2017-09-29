@@ -53,6 +53,6 @@ class Main:
         expl.show_delays_per_raining_day(dataset)
 
     def data_analysis(self):
-        expl.show_basic_information(training_filename)
+        expl.plot_performance_metrics()
 
-Main().naive_bayes_predictor()
+Main().random_forest_predictor()

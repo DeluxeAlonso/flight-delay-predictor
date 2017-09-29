@@ -142,9 +142,8 @@ class DataExploration:
         print("Total count of airports: {0}".format(len(x)))
         busiest_origin_airports = sorted(x, key=x.__getitem__, reverse=True)
         busiest_origin_airports = busiest_origin_airports[:airports_limit]
-        print(x)
         flight_qty = 0
-        print("bussiest_origin_airports: {0}".format(busiest_origin_airports))
+        print("Bussiest_origin_airports: {0}".format(busiest_origin_airports))
         for key in busiest_origin_airports:
             flight_qty += x[key]
         print("Total flights in bussiest airports: {0}".format(flight_qty))
@@ -262,7 +261,6 @@ class DataExploration:
             if dataset[i].weather and dataset[i].weather.pressure is not None and dataset[i].delayed:
                 avg_values.append(float(dataset[i].weather.pressure))
         avg_values = np.array(sorted(avg_values))
-        print("sns")
         sns.set(color_codes=True)
         sns.distplot(avg_values)
         plt.show()
@@ -293,4 +291,31 @@ class DataExploration:
         ax.set_xticks(ind + bar_width / 2)
         ax.set_xticklabels(('Sin Lluvia', 'Con Lluvia'))
         ax.legend((delayed_flights_bar[0], total_flights_bar[0]), ('Viajes retrasados', 'Viajes totales'))
+        plt.show()
+
+    def plot_performance_metrics():
+        bar_width = 0.15
+        performance_metrics_qty = 5
+        ind = np.arange(performance_metrics_qty)
+        fig, ax = plt.subplots()
+
+        first_evaluation = (0.0713, 0.9717, 0.3930, 0.7882, 0.12)
+        cancelled = (0.1256, 0.9385, 0.3602, 0.7630, 0.18)
+        days_to_holiday = (0.1914, 0.9389, 0.4617, 0.7784, 0.27)
+        daily_weather = (0.2786, 0.8885, 0.6048, 0.8060, 0.38)
+        hourly_weather = (0.3786, 0.9510, 0.6796, 0.8281, 0.482)
+
+        first_evaluation_bar = ax.bar(ind, first_evaluation, bar_width, color='#da9693')
+        cancelled_bar = ax.bar(ind + bar_width, cancelled, bar_width, color='#fbc08c')
+        days_to_holiday_bar = ax.bar(ind + 2 * bar_width, days_to_holiday, bar_width, color='#c3d798')
+        daily_weather_bar = ax.bar(ind + 3 * bar_width, daily_weather, bar_width, color='#8cc6d6')
+        hourly_weather_bar = ax.bar(ind + 4 * bar_width, hourly_weather, bar_width, color='#4f80cf')
+
+        ax.set_ylabel('')
+        ax.set_title('Métricas de rendimiento')
+        ax.set_xticks(ind + 4 * bar_width / 2)
+        ax.set_xticklabels(('Sensibilidad', 'Especificidad', 'Precisión', 'Tasa de acierto', 'F1 Score'))
+        ax.legend((first_evaluation_bar[0], cancelled_bar[0] , days_to_holiday_bar[0], daily_weather_bar[0], hourly_weather_bar[0]),
+                  ('Primera evaluación', 'Vuelos cancelados', 'DaysToHoliday', 'Clima por día', 'Clima por hora'), loc=1)
+        plt.ylim([0.0, 1.25])
         plt.show()

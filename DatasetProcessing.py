@@ -2,13 +2,19 @@ import matplotlib.pyplot as plt
 import csv
 import numpy as np
 import Constants
-from Utils import Utils
+from Utils import Utils, WeatherType, FeatureEngineering
 
 original_training_dataset_filename = 'Datasets/NewYork/Training/merged_training.csv'
-training_dataset_filename = 'Datasets/TrainingDataset.csv'
-
 original_testing_dataset_filename = 'Datasets/NewYork/Testing/merged_testing.csv'
+
+training_dataset_filename = 'Datasets/TrainingDataset.csv'
 testing_dataset_filename = 'Datasets/TestingDataset.csv'
+
+training_hourly_weather_filename = 'Datasets/TrainingWeatherHourlyDataset.csv'
+testing_hourly_weather_filename = 'Datasets/TestingWeatherHourlyDataset.csv'
+
+training_corpus_filename = 'Datasets/TrainingCorpus.csv'
+testing_corpus_filename = 'Datasets/TestingCorpus.csv'
 
 class DatasetProcessing:
     def process_training_dataset(self):
@@ -95,4 +101,42 @@ class DatasetProcessing:
                               Constants.month_labels,
                               Constants.output_training_merge_filename)
 
-DatasetProcessing().process_testing_dataset()
+    def corpus_creation(self):
+        DatasetProcessing.create_training_corpus()
+        DatasetProcessing.create_testing_corpus()
+
+    def create_training_corpus():
+        header_array = ['MONTH', 'DAY_OF_MONTH', 'DAY_OF_WEEK', 'ORIGIN_AIRPORT', 'DEST_AIRPORT',
+                        'DEPARTURE_TIME', 'FL_NUMBER', 'TAIL_NUMBER', 'ELAPSED_TIME', 'DAYS_TO_HOLIDAY',
+                        'TEMPERATURE', 'SKY_CONTIDION', 'WIND_SPEED', 'PRESSURE', 'HUMIDITY',
+                        'ALTIMETER', 'RAIN', 'SNOW', 'FOG', 'MIST', 'FREEZING', 'DELAYED']
+        training_dataset = Utils.load_processed_dataset(training_hourly_weather_filename, include_weather=True,
+                                                        weather_type=WeatherType.HOURLY)
+        training_array = []
+        print(len(training_dataset))
+        for i in range(len(training_dataset)):
+            training_array.append(training_dataset[i].get_corpus_properties())
+        print(len(training_array))
+        print(training_array[0])
+        wr = csv.writer(open(training_corpus_filename, "w+"))
+        wr.writerow(header_array)
+        wr.writerows(training_array)
+
+    def create_testing_corpus():
+        header_array = ['MONTH', 'DAY_OF_MONTH', 'DAY_OF_WEEK', 'ORIGIN_AIRPORT', 'DEST_AIRPORT',
+                        'DEPARTURE_TIME', 'FL_NUMBER', 'TAIL_NUMBER', 'ELAPSED_TIME', 'DAYS_TO_HOLIDAY',
+                        'TEMPERATURE', 'SKY_CONTIDION', 'WIND_SPEED', 'PRESSURE', 'HUMIDITY',
+                        'ALTIMETER', 'RAIN', 'SNOW', 'FOG', 'MIST', 'FREEZING', 'DELAYED']
+        testing_dataset = Utils.load_processed_dataset(testing_hourly_weather_filename, include_weather=True,
+                                                        weather_type=WeatherType.HOURLY)
+        testing_array = []
+        print(len(testing_dataset))
+        for i in range(len(testing_dataset)):
+            testing_array.append(testing_dataset[i].get_corpus_properties())
+        print(len(testing_array))
+        print(testing_array[0])
+        wr = csv.writer(open(testing_corpus_filename, "w+"))
+        wr.writerow(header_array)
+        wr.writerows(testing_array)
+
+DatasetProcessing().corpus_creation()

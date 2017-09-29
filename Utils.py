@@ -2,7 +2,8 @@ import csv
 import math
 import datetime
 import pandas as pd
-from Models.Flight import Flight
+import numpy as np
+from Models.Flight import Flight, Constants
 from Models.Weather import Weather
 from Models.HourlyWeather import HourlyWeather
 from enum import Enum
@@ -207,3 +208,66 @@ class Utils:
             return value[0:floating_point_pos]
         else:
             return ValueError
+
+    # Pandas
+
+    def load_df_from_json(json):
+        df_header = Constants.df_header
+        print(df_header)
+        print(json)
+        month, day_of_month, day_of_week, days_to_holiday = Utils.get_date_characteristics(json['date'])
+        origin, dest, dep, fl_num, tail_num, elapsed = Utils.get_base_characteristics(json)
+        temp, sky, wind, press, hum, alt = Utils.get_weather_characteristics(json)
+        rain, snow, fog, mist, freezing, delayed = Utils.get_binary_characteristics(json)
+        array = [month, day_of_month, day_of_week, origin, dest, dep,
+                 fl_num, tail_num, elapsed, days_to_holiday, temp, sky,
+                 wind, press, hum, alt, rain, snow, fog, mist, freezing, delayed]
+        df = pd.DataFrame(np.array(array).reshape(1, 22), columns=df_header)
+        df = df.replace('', np.nan)
+        df[["DELAYED"]] = df[["DELAYED"]].astype(int).astype(bool)
+        print(df)
+        return df
+
+
+    def get_date_characteristics(string_date):
+        if string_date == '':
+            return None, None, None, 20
+        date = datetime.datetime.strptime(string_date, "%d/%m/%Y").date()
+        month = str(date.month)
+        day_of_month = str(date.day)
+        day_of_week = str(date.weekday() + 1)
+        return month, day_of_month, day_of_week, 10
+
+    def get_base_characteristics(json):
+        origin = json['origin']
+        dest = json['destination']
+        dep = Utils.get_dep(json['departure'])
+        fl_num = json['flightNumber']
+        tail_num = json['tailNumber']
+        elapsed = json['estimatedTime']
+        return origin, dest, dep, fl_num, tail_num, elapsed
+
+    def get_weather_characteristics(json):
+        temp = json['temp']
+        sky = json['skyCondition']
+        wind = json['windSpeed']
+        press = json['pressure']
+        hum = json['humidity']
+        alt = json['altimeter']
+        return temp, sky, wind, press, hum, alt
+
+    def get_binary_characteristics(json):
+        rain = json['rain']
+        snow = json['snow']
+        fog = json['fog']
+        mist = json['mist']
+        freezing = json['freezing']
+        delayed = 0
+        return rain, snow, fog, mist, freezing, delayed
+
+    def get_dep(dep_time):
+        if dep_time == '':
+            return None
+        arr = dep_time.split(':')
+        time = str(int(arr[0]))
+        return time
