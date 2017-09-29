@@ -9,7 +9,7 @@ from Models.Flight import Flight
 import matplotlib.pyplot as plt
 
 seed = 7
-num_trees = 15
+num_trees = 5
 max_features = 8
 n_splits = 3
 max_depth = 20
@@ -51,9 +51,14 @@ class RandomForest:
         probabilities_array = []
         predictions = predictions.as_data_frame().values.tolist()
         for i in range(len(predictions)):
+            print("prediction")
+            print(predictions[i])
+            print(predictions[i][0])
             if predictions[i][0] >= 0.5:
+                print("1.0")
                 predictions_array.append(1.0)
             else:
+                print("0.0")
                 predictions_array.append(0.0)
             probabilities_array.append(predictions[i][0])
         return predictions_array, probabilities_array
