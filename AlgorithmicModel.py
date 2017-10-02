@@ -6,6 +6,8 @@ from h2o.estimators import H2ORandomForestEstimator
 
 training_filename = 'Datasets/TrainingCorpus.csv'
 testing_filename = 'Datasets/TestingCorpus.csv'
+testing_2017_filename = 'Datasets/TestingCorpus2017.csv'
+testing_manual_2017_filename = 'Datasets/TestingManual2017.csv'
 
 model_filename = '/Users/Alonso/Documents/Tesis/FlightDelayPredictor/DRF_model_python_1506367636251_1'
 
@@ -70,6 +72,103 @@ class AlogrithmicModel:
             probs_array.append(probabilities[i][2])
         AlogrithmicModel.show_measure_metrics(pred_array, ytest)
 
+    def test_with_2016_july(self):
+        tr_df = pd.read_csv(training_filename)
+        ts_df = pd.read_csv(testing_filename)
+
+        tr_df[["DELAYED"]] = tr_df[["DELAYED"]].astype(int).astype(bool)
+        ts_df[["DELAYED"]] = ts_df[["DELAYED"]].astype(int).astype(bool)
+
+        ts_df = ts_df[ts_df['MONTH'] < 8]
+        print(ts_df)
+
+        cols = list(tr_df.columns.values)
+        ytest = ts_df.values[:, len(cols) - 1]
+
+        h2o.init()
+        h2o.connect()
+        test = h2o.H2OFrame(ts_df)
+
+        print(test)
+
+        model = h2o.load_model(model_filename)
+        probabilities = model.predict(test)
+        probabilities = probabilities.as_data_frame().values.tolist()
+        probs_array = []
+        pred_array = []
+        for i in range(len(probabilities)):
+            if probabilities[i][2] >= threshold:
+                pred_array.append(1.0)
+            else:
+                pred_array.append(0.0)
+            probs_array.append(probabilities[i][2])
+        AlogrithmicModel.show_measure_metrics(pred_array, ytest)
+
+    def test_with_2017(self):
+        tr_df = pd.read_csv(training_filename)
+        ts_df = pd.read_csv(testing_2017_filename)
+
+        tr_df[["DELAYED"]] = tr_df[["DELAYED"]].astype(int).astype(bool)
+        ts_df[["DELAYED"]] = ts_df[["DELAYED"]].astype(int).astype(bool)
+
+        #We drop unsused columns
+        ts_df = ts_df.drop('DATE', 1)
+        ts_df = ts_df.drop('CODESUM', 1)
+
+        cols = list(tr_df.columns.values)
+        ytest = ts_df.values[:, len(cols) - 1]
+
+        h2o.init()
+        h2o.connect()
+        test = h2o.H2OFrame(ts_df)
+
+        print(test)
+
+        model = h2o.load_model(model_filename)
+        probabilities = model.predict(test)
+        probabilities = probabilities.as_data_frame().values.tolist()
+        probs_array = []
+        pred_array = []
+        for i in range(len(probabilities)):
+            if probabilities[i][2] >= threshold:
+                pred_array.append(1.0)
+            else:
+                pred_array.append(0.0)
+            probs_array.append(probabilities[i][2])
+        AlogrithmicModel.show_measure_metrics(pred_array, ytest)
+
+    def test_manual_2017(self):
+        tr_df = pd.read_csv(training_filename)
+        ts_df = pd.read_csv(testing_manual_2017_filename)
+
+        tr_df[["DELAYED"]] = tr_df[["DELAYED"]].astype(int).astype(bool)
+        ts_df[["DELAYED"]] = ts_df[["DELAYED"]].astype(int).astype(bool)
+
+        ts_df['ELAPSED_TIME'] = [120 for x in ts_df['ELAPSED_TIME']]
+        print(ts_df)
+
+        cols = list(tr_df.columns.values)
+        ytest = ts_df.values[:, len(cols) - 1]
+
+        h2o.init()
+        h2o.connect()
+        test = h2o.H2OFrame(ts_df)
+
+        print(test)
+
+        model = h2o.load_model(model_filename)
+        probabilities = model.predict(test)
+        probabilities = probabilities.as_data_frame().values.tolist()
+        probs_array = []
+        pred_array = []
+        for i in range(len(probabilities)):
+            if probabilities[i][2] >= threshold:
+                pred_array.append(1.0)
+            else:
+                pred_array.append(0.0)
+            probs_array.append(probabilities[i][2])
+        AlogrithmicModel.show_measure_metrics(pred_array, ytest)
+
     def show_measure_metrics(pred_array, ytest):
         tp, fp, tn, fn = 0, 0, 0, 0
         for x in range(len(ytest)):
@@ -107,4 +206,5 @@ class AlogrithmicModel:
         probabilities = probabilities.as_data_frame().values.tolist()
         return probabilities[0][2]
 
-AlogrithmicModel().load_final_model()
+
+AlogrithmicModel().test_manual_2017()

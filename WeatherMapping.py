@@ -3,8 +3,8 @@ import pandas as pd
 import Constants
 from Models.Airport import Airport, Station
 from Models.Weather import Weather
-from Models.HourlyWeather import  HourlyWeather
-from Utils import Utils
+from Models.HourlyWeather import  HourlyWeather, datetime, timedelta
+from Utils import Utils, Flight
 
 original_stations_filename_2015 = 'WeatherMappingFiles/Stations/2015stations.txt'
 original_stations_filename_2016 = 'WeatherMappingFiles/Stations/2016stations.txt'
@@ -254,14 +254,6 @@ class WeatherMapping:
             if len(weather) == 0:
                 flight.hourly_weather = None
             else:
-                if float(flight.delayed) == 1.0 and (i % 2 == 0):
-                    weather[0].rain = 1.0
-                    weather[0].mist = 1.0
-                    weather[0].fog = 1.0
-                elif float(flight.delayed) == 0.0 and (i % 15 == 0):
-                    weather[0].mist = 0.0
-                    weather[0].fog = 0.0
-                    weather[0].rain = 0.0
                 flight.hourly_weather = weather[0]
             flight_list.append(flight.get_properties_array())
         wr = csv.writer(open(output_filename, "w+"))
@@ -298,8 +290,112 @@ class WeatherMapping:
         tr_corpus_df = pd.read_csv('Datasets/TrainingCorpus.csv')
         tr_corpus_df['SKY_CONDITION'] = [x[:3] for x in tr_corpus_df['SKY_CONDITION']]
         tr_corpus_df.to_csv('Datasets/NewTrainingCorpus.csv', encoding='utf-8')
-        #ts_corpus_df = pd.read_csv('Datasets/TestingCorpus.csv')
-        #ts_corpus_df['SKY_CONDITION'] = ['' if len(str(x)) < 3 else str(x)[:3] for x in ts_corpus_df['SKY_CONDITION']]
-        #ts_corpus_df.to_csv('Datasets/TestingCorpus.csv', encoding='utf-8')
+        ts_corpus_df = pd.read_csv('Datasets/TestingCorpus2017.csv')
+        ts_corpus_df['SKY_CONDITION'] = ['' if len(str(x)) < 3 else str(x)[:3] for x in ts_corpus_df['SKY_CONDITION']]
+        ts_corpus_df.to_csv('Datasets/TestingCorpus2017.csv', encoding='utf-8')
 
-WeatherMapping().transform_sky_condition()
+    #2017 Dataset
+    def map_2017_dataset(self):
+        corpus_filename = 'Datasets/TestingCorpus2017.csv'
+        WeatherMapping.merge_hourly_weather_2017_files()
+        WeatherMapping.map_2017_wban(corpus_filename, output_testing_airports_filename,corpus_filename)
+        WeatherMapping.change_departure_time_format(corpus_filename, 'CRS_DEP_TIME')
+        WeatherMapping.change_departure_time_format(Constants.output_testing_2017_weather_hourly_merged_filename, 'Time',
+                                                    #apply_timezone=True)
+        WeatherMapping.append_hourly_weather_2017(corpus_filename, Constants.output_testing_2017_weather_hourly_merged_filename)
+
+    #(Constants.output_current_year_merge_filename, output_testing_airports_filename, corpus_filename)
+    def map_2017_wban(file, wban_file, output_file):
+        airports_df = pd.read_csv(wban_file)
+        input_df = pd.read_csv(file)
+        df = pd.merge(input_df, airports_df, how='left', on=['ORIGIN_AIRPORT'])
+        df.to_csv(output_file, encoding='utf-8')
+
+    #(corpus_filename)
+    def transform_cancelled_flights(file):
+        df = pd.read_csv(file)
+        df['DELAYED'].fillna('1', inplace=True)
+        df[["DELAYED"]] = df[["DELAYED"]].astype(int).astype(bool)
+        df.to_csv(file, encoding='utf-8')
+
+    def merge_daily_weather_2017_files():
+        Utils.merge_csv_files(Constants.weather_daily_2017_testing_folder,
+                              Constants.weather_daily_2017_testing_labels,
+                              Constants.output_testing_2017_weather_merged_filename, file_ext=".txt")
+
+    def merge_hourly_weather_2017_files():
+        Utils.merge_csv_files(Constants.weather_hourly_2017_testing_folder,
+                              Constants.weather_hourly_2017_testing_labels,
+                              Constants.output_testing_2017_weather_hourly_merged_filename, file_ext=".txt")
+
+    #(Constants.output_testing_2017_weather_filename, 'DATE')
+    def change_date_format(file, date_key):
+        df = pd.read_csv(file)
+        print(df.head())
+        df[date_key] = df[date_key].apply(lambda x: str(int(str(x)[4:6])) + '/' + str(int(str(x)[6:8])) + '/17')
+        print(df.head())
+        df.to_csv(file, encoding='utf-8')
+
+    def change_departure_time_format(file, departure_key, apply_timezone=False):
+        df = pd.read_csv(file)
+        print(df.head())
+        if apply_timezone:
+            df[departure_key] = df[departure_key].apply(lambda x: HourlyWeather.get_time_hour(x))
+        else:
+            df[departure_key] = df[departure_key].apply(lambda x: str(int(str(x).zfill(4)[:2])))
+        print(df.head())
+        df.to_csv(file, encoding='utf-8')
+
+    #(corpus_filename, Constants.output_testing_2017_weather_filename)
+    def append_codesum_2017(file, codesum_file):
+        codesum_df = pd.read_csv(codesum_file)
+        df = pd.read_csv(file)
+        df = pd.merge(df, codesum_df, how='left', on=['WBAN', 'DATE'])
+        df.to_csv(file, encoding='utf-8')
+
+    def append_hourly_weather_2017(file, weather_file):
+        df = pd.read_csv(file)
+        w_df = pd.read_csv(weather_file)
+        w_df.drop_duplicates(subset = ['WBAN', 'Date', 'Time'], keep="last")
+        df2 = pd.merge(df, w_df, how='left', on=['WBAN', 'Date', 'Time'])
+        df2.to_csv(file, encoding='utf-8')
+
+    def clear_delayed(file):
+        df = pd.read_csv(file)
+        header = list(df.columns.values)
+        df = df.as_matrix()
+        property_list = []
+        for i in range(len(df)):
+            w = df[i]
+            delayed = bool(w[header.index("DELAYED")])
+            if delayed and not (i % 20 == 0):
+                property_list.append(list(w))
+            elif not delayed:
+                property_list.append(list(w))
+        wr = csv.writer(open(file, "w+"))
+        wr.writerow(header)
+        wr.writerows(property_list)
+
+    def append_days_to_holiday(file):
+        df = pd.read_csv(file)
+        header = list(df.columns.values)
+        df = df.as_matrix()
+        property_list = []
+        for i in range(len(df)):
+            w = df[i]
+            day_of_month = str(w[header.index("DAY_OF_MONTH")]).zfill(2)
+            month = str(w[header.index("MONTH")]).zfill(2)
+            days_to_holiday = [Flight.get_days_to_holiday(day_of_month, month, "2017")]
+            concat_list = list(w) + days_to_holiday
+            property_list.append(concat_list)
+        wr = csv.writer(open(file, "w+"))
+        header = header + ["DAYS_TO_HOLIDAY"]
+        wr.writerow(header)
+        wr.writerows(property_list)
+
+    def drop_duplicated_rows(file):
+        df = pd.read_csv(file)
+        df = df.drop_duplicates(subset = ['Date', 'TAIL_NUMBER', 'FL_NUMBER', 'ORIGIN_AIRPORT', 'DEST_AIRPORT', 'Time'], keep="last")
+        df.to_csv(file, encoding='utf-8')
+
+WeatherMapping().map_2017_dataset()

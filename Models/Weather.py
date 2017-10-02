@@ -44,7 +44,7 @@ class Weather:
         return [self.min_temp, self.avg_temp, self.max_temp, self.snowfall,
                 self.water, self.pressure, self.avg_speed]
 
-    def process_code_sum(self, code_sum):
+    def process_code_sum(code_sum):
         print(code_sum)
         codes = []
         code_array = ' '.join(code_sum.split())
@@ -57,42 +57,42 @@ class Weather:
                 codes.append(code_array[i])
         return ' '.join(codes)
 
-    def process_rain_code(self,code_sum):
+    def process_rain_code(code_sum):
         code = ' '.join(code_sum.split())
         code_array = code.split(' ')
         if "RA" in code_array or "RA+" in code_array or "RA-" in code_array:
             return 1.0
         return 0.0
 
-    def process_thunderstorm_code(self,code_sum):
+    def process_thunderstorm_code(code_sum):
         code = ' '.join(code_sum.split())
         code_array = code.split(' ')
         if "TS" in code_array or "TS+" in code_array or "TS-" in code_array:
             return 1.0
         return 0.0
 
-    def process_snow_code(self,code_sum):
+    def process_snow_code(code_sum):
         code = ' '.join(code_sum.split())
         code_array = code.split(' ')
         if "SN" in code_array or "SN+" in code_array or "SN-" in code_array:
             return 1.0
         return 0.0
 
-    def process_fog_code(self,code_sum):
+    def process_fog_code(code_sum):
         code = ' '.join(code_sum.split())
         code_array = code.split(' ')
         if "FG" in code_array or "FG+" in code_array or "FG-" in code_array:
             return 1.0
         return 0.0
 
-    def process_mist_code(self, code_sum):
+    def process_mist_code(code_sum):
         code = ' '.join(code_sum.split())
         code_array = code.split(' ')
         if "BR" in code_array or "BR+" in code_array or "BR-" in code_array:
             return 1.0
         return 0.0
 
-    def process_freezing_code(self, code_sum):
+    def process_freezing_code(code_sum):
         code = ' '.join(code_sum.split())
         code_array = code.split(' ')
         if "FZ" in code_array or "FZ+" in code_array or "FZ-" in code_array:

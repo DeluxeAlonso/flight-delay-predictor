@@ -45,9 +45,9 @@ class HourlyWeather:
                 self.pressure, self.humidity, self.altimeter, self.rain,
                 self.snow, self.fog, self.mist, self.freezing]
 
-    def get_time_hour(self, time):
-        if len(str(time)) <= 2:
-            return str(time)
+    def get_time_hour(time):
+        #if len(str(time)) <= 2:
+        #    return str(time)
         time = str(time).zfill(4)
         time = datetime.strptime(time, '%M%S') - timedelta(hours=5)
         time = datetime.strftime(time,'%M%S')

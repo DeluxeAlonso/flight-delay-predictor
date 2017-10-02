@@ -139,4 +139,11 @@ class DatasetProcessing:
         wr.writerow(header_array)
         wr.writerows(testing_array)
 
-DatasetProcessing().corpus_creation()
+    # 2017 Testing Dataset
+
+    def process_2017_testing_dataset(self):
+        Utils.merge_csv_files(Constants.monthly_current_year_folder,
+                              Constants.current_year_month_labels,
+                              Constants.output_current_year_merge_filename)
+
+DatasetProcessing().process_2017_testing_dataset()
