@@ -206,3 +206,13 @@ class Flight:
             days_qty = abs(Utils.Utils.days_difference_between_dates(formatted_date, holidays[i]))
             evaluated_days.append(days_qty)
         self.days_to_holiday = min(evaluated_days)
+
+    def get_days_to_holiday(day_of_month, month, year="2017"):
+        evaluated_days = []
+        formatted_date = Utils.Utils.get_date(day_of_month, month, year)
+        if year == "2017":
+            holidays = Constants.national_holidays_2017
+        for i in range(len(holidays)):
+            days_qty = abs(Utils.Utils.days_difference_between_dates(formatted_date, holidays[i]))
+            evaluated_days.append(days_qty)
+        return min(evaluated_days)
